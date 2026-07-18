@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CyberGhani — AI SecLab · Every lab, exploit &amp; lesson in one place</title>
+<meta name="theme-color" content="#0A0E12">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CyberGhani">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ===== DARK (default) — terminal ===== */
+:root{
+  --ink:#E7F0EE; --ink-soft:#9FB2AE; --ink-faint:#63756F;
+  --neon:#3DF5C4; --neon-deep:#22D3A8; --neon-tint:#0E2620;
+  --cyan:#4CE0FF; --blue:#5A8DFF; --violet:#9B7BFF; --amber:#F5B347; --red:#FF5C6C; --pink:#FF6FB1;
+  --paper:#080B0F; --card:#0F161C; --sand:#131C24; --line:#22303A; --line-soft:#182430;
+  --shadow:0 1px 2px rgba(0,0,0,.5),0 14px 40px rgba(0,0,0,.55);
+  --r:14px; --r-sm:9px; --r-lg:22px; --maxw:1440px;
+  --mono:'JetBrains Mono',monospace;
+}
+[data-theme="light"]{
+  --ink:#0C1A18; --ink-soft:#3B4C48; --ink-faint:#748480;
+  --neon:#0E9E7E; --neon-deep:#0A7A62; --neon-tint:#D9F5EC;
+  --cyan:#0E86A8; --blue:#2C5EC8; --violet:#6A4BD0; --amber:#B87908; --red:#C6303F; --pink:#C23C84;
+  --paper:#EDF2F1; --card:#FBFDFC; --sand:#E3ECEA; --line:#C8D6D2; --line-soft:#D8E3E0;
+  --shadow:0 1px 2px rgba(12,26,24,.06),0 10px 28px rgba(12,26,24,.10);
+}
+[data-theme="mono"]{
+  --ink:#EDEDED; --ink-soft:#A6A6A6; --ink-faint:#6E6E6E;
+  --neon:#E4E4E4; --neon-deep:#BFBFBF; --neon-tint:#1C1C1C;
+  --cyan:#CFCFCF; --blue:#B9B9B9; --violet:#C7C7C7; --amber:#D8D8D8; --red:#FF7A86; --pink:#D0D0D0;
+  --paper:#060606; --card:#101010; --sand:#161616; --line:#2A2A2A; --line-soft:#1C1C1C;
+  --shadow:0 1px 2px rgba(0,0,0,.6),0 14px 40px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Inter',sans-serif;color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;
+  background:
+    radial-gradient(900px 500px at 88% -12%,rgba(61,245,196,.06),transparent 60%),
+    radial-gradient(760px 460px at 6% 4%,rgba(90,141,255,.05),transparent 60%),
+    radial-gradient(820px 520px at -8% 112%,rgba(155,123,255,.05),transparent 55%),
+    var(--paper);}
+[data-theme="light"] body{background:radial-gradient(900px 500px at 88% -12%,rgba(14,158,126,.09),transparent 60%),radial-gradient(760px 460px at 6% 4%,rgba(44,94,200,.06),transparent 60%),var(--paper);}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:14px}
+.hidden{display:none !important}
+.mono{font-family:var(--mono)}
+a{color:var(--neon)}
+
+.btn{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:11px 18px;border-radius:var(--r-sm);font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:8px;justify-content:center;transition:.15s;text-decoration:none}
+.btn:hover{border-color:var(--neon);color:var(--neon)}
+.btn.primary{background:linear-gradient(180deg,var(--neon),var(--neon-deep));color:#04140F;border-color:var(--neon-deep);box-shadow:0 2px 0 var(--neon-deep),0 6px 20px rgba(34,211,168,.28)}
+.btn.primary:hover{filter:brightness(1.08);color:#02100C}
+.btn.ghost{background:transparent}
+.btn.wide{width:100%}
+.btn.sm{padding:7px 12px;font-size:12.5px}
+.btn.violet{background:linear-gradient(180deg,var(--violet),#6A4BD0);color:#fff;border-color:#6A4BD0}
+.link{background:none;border:none;color:var(--neon);font-weight:600;text-decoration:underline;text-underline-offset:2px;font-size:13.5px}
+.link.danger{color:var(--red)}
+.btn:disabled{cursor:progress}
+.btn.primary:disabled,.btn.violet:disabled{animation:aipulse 1.1s ease-in-out infinite}
+@keyframes aipulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.18)}}
+
+/* logo / seal */
+.logoSlot{display:inline-flex;flex:none;line-height:0}
+.logoSlot svg{display:block;border-radius:11px}
+
+/* ==== auth / profile gate ==== */
+.gate{min-height:100dvh;display:grid;place-items:center;padding:26px 16px}
+.gate-wrap{width:100%;max-width:470px}
+.gate-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:30px 28px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.gate-card::before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent,rgba(61,245,196,.05),transparent);pointer-events:none}
+.brand{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;margin-bottom:6px;position:relative}
+.wordmark{display:flex;align-items:center;gap:12px}
+.wordmark .en{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:30px;letter-spacing:-.6px;line-height:1;background:linear-gradient(95deg,var(--neon) 0%,var(--cyan) 60%,var(--blue) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.prompt{font-family:var(--mono);font-size:13px;color:var(--neon);letter-spacing:.5px}
+.prompt .cur{display:inline-block;width:8px;height:15px;background:var(--neon);margin-left:2px;vertical-align:-2px;animation:blink 1.05s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.slogan{font-size:12.5px;color:var(--ink-faint);max-width:340px}
+.company-tag{font-size:11px;color:var(--ink-faint);font-weight:600;letter-spacing:.3px}
+.company-tag b{color:var(--neon)}
+.gate-h{font-family:'Space Grotesk',sans-serif;font-size:20px;margin:20px 0 4px;text-align:center}
+.gate-sub{font-size:13px;color:var(--ink-faint);text-align:center;margin-bottom:20px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--ink-soft);margin-bottom:6px}
+.field label .req{color:var(--red)}
+.field input,.field select,.field textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--paper);color:var(--ink);transition:.15s}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px var(--neon-tint)}
+.field textarea{resize:vertical;min-height:74px}
+.field .hint{font-size:11.5px;color:var(--ink-faint);margin-top:5px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.note{font-size:12px;color:var(--ink-faint);text-align:center;margin-top:14px;line-height:1.6}
+.av-row{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.av{width:66px;height:66px;border-radius:14px;border:2px solid var(--neon);object-fit:cover;background:var(--neon-tint);display:grid;place-items:center;color:var(--neon);font-weight:700;font-size:24px;font-family:'Space Grotesk',sans-serif;background-size:cover;background-position:center}
+
+/* app shell */
+#appShell{min-height:100dvh;display:flex;flex-direction:column}
+.topbar{position:sticky;top:0;z-index:40;background:linear-gradient(110deg,#0A1119,#0D1822 55%,#0A1A17);border-bottom:1px solid var(--line);color:var(--ink);padding:11px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+[data-theme="light"] .topbar{background:linear-gradient(110deg,#0C1A18,#0F2320 55%,#123)}
+.tb-brand{display:flex;align-items:center;gap:11px;min-width:0}
+.tb-logo{display:flex;flex-direction:column;align-items:center;flex:none;gap:2px}
+.tb-logo .logoBox svg{transform-origin:50% 40%}
+.tb-logo .logoBox:hover svg{animation:scaleRock 1.1s ease-in-out}
+@keyframes scaleRock{0%{transform:rotate(0)}20%{transform:rotate(-9deg)}45%{transform:rotate(7deg)}70%{transform:rotate(-4deg)}100%{transform:rotate(0)}}
+.tb-logo .brandco{font-family:var(--mono);font-weight:700;font-size:7.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--neon);white-space:nowrap}
+.brand-name{display:flex;flex-direction:column;min-width:0}
+.brand-name .en{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px;letter-spacing:-.3px;color:var(--neon);text-shadow:0 0 16px rgba(61,245,196,.35)}
+.brand-name .tag{font-family:var(--mono);font-size:9px;color:var(--ink-soft);margin-top:1px;letter-spacing:.3px}
+.tb-slogan{align-self:flex-start;margin-top:1px;transform:rotate(-4deg);transform-origin:top center;transition:transform .35s ease;flex:0 0 auto;position:relative}
+.tb-slogan:hover{transform:rotate(0)}
+.tb-slogan::before{content:"";position:absolute;top:-9px;left:50%;transform:translateX(-50%);width:2px;height:9px;background:linear-gradient(var(--neon),transparent)}
+.tb-slogan::after{content:"";position:absolute;top:-13px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#bffff0,var(--neon-deep));box-shadow:0 0 8px rgba(61,245,196,.7);z-index:2}
+.tb-slogan span{display:inline-block;font-family:var(--mono);font-weight:600;font-size:11.5px;letter-spacing:.3px;color:#04140F;padding:5px 13px;border-radius:7px;background:linear-gradient(120deg,var(--neon),var(--cyan),var(--neon-deep));background-size:250% 250%;animation:slogShift 8s ease infinite;box-shadow:0 6px 16px rgba(34,211,168,.32)}
+@keyframes slogShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@media(max-width:640px){.tb-slogan{display:none}}
+.tb-right{display:flex;align-items:center;gap:8px}
+.icon-btn{width:36px;height:36px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--ink);display:grid;place-items:center;font-size:15px;transition:.15s}
+.icon-btn:hover{border-color:var(--neon);color:var(--neon)}
+.userchip{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);padding:5px 12px 5px 5px;border-radius:30px;color:var(--ink);font-size:13px;font-weight:600}
+.userchip .av{width:28px;height:28px;font-size:13px;border-width:1.5px;border-radius:8px}
+
+.primnav{position:sticky;top:59px;z-index:36;display:flex;align-items:center;gap:8px;padding:9px 18px;background:linear-gradient(180deg,var(--sand),var(--paper));border-bottom:1px solid var(--line);overflow-x:auto}
+.primnav button{border:1px solid transparent;background:none;padding:9px 15px;border-radius:30px;font-weight:600;font-size:13.5px;color:var(--ink-soft);white-space:nowrap;display:flex;align-items:center;gap:7px;transition:.14s;flex:none}
+.primnav button:hover{background:var(--neon-tint);color:var(--neon)}
+.primnav button.on{background:linear-gradient(95deg,var(--neon),var(--cyan));color:#04140F;box-shadow:0 5px 16px rgba(34,211,168,.32)}
+.primnav .pill{background:var(--red);color:#fff;border-radius:20px;font-size:10px;font-weight:700;padding:1px 7px;min-width:18px;text-align:center}
+.primnav button.on .pill{background:rgba(0,0,0,.28)}
+
+.layout{display:flex;align-items:flex-start;max-width:var(--maxw);margin:0 auto;width:100%}
+.sidebar{width:232px;flex:none;position:sticky;top:110px;align-self:flex-start;max-height:calc(100dvh - 110px);overflow-y:auto;padding:16px 12px 24px;background:var(--sand);border-right:1px solid var(--line);min-height:calc(100dvh - 110px)}
+.sidebar .nav-group{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ink-faint);padding:14px 12px 6px}
+.sidebar button[data-view]{width:100%;border:none;background:none;text-align:left;padding:10px 12px;border-radius:10px;font-weight:600;font-size:13.5px;color:var(--ink-soft);display:flex;align-items:center;gap:9px;margin-bottom:2px;transition:.13s}
+.sidebar button[data-view]:hover{background:var(--neon-tint);color:var(--neon)}
+.sidebar button[data-view].on{background:linear-gradient(180deg,var(--neon),var(--neon-deep));color:#04140F}
+.side-key{width:100%;margin-top:14px;border:1px dashed var(--neon);background:var(--card);color:var(--neon);border-radius:10px;padding:10px;font-weight:700;font-size:12.5px}
+.side-key:hover{background:var(--neon-tint)}
+.nav-foot{margin-top:16px;padding:12px;border-top:1px solid var(--line-soft);display:flex;align-items:center;gap:9px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:12px;color:var(--ink-soft);line-height:1.4}
+.nav-foot span{display:block;font-family:var(--mono);font-weight:400;font-size:9.5px;color:var(--ink-faint)}
+.side-toggle,.side-open{display:none}
+.scrim{display:none}
+main{flex:1;min-width:0;width:100%;padding:24px 22px 90px}
+@media(max-width:880px){
+  .sidebar{position:fixed;left:0;top:0;height:100dvh;max-height:none;width:264px;background:var(--card);transform:translateX(-100%);transition:transform .22s ease;box-shadow:0 0 40px rgba(0,0,0,.5);z-index:60;padding-top:18px}
+  .sidebar.open{transform:none}
+  .side-toggle{display:block;width:100%;text-align:right;border:none;background:none;color:var(--ink-faint);font-weight:600;font-size:13px;padding:4px 12px 8px}
+  .scrim.show{display:block;position:fixed;inset:0;background:rgba(4,8,10,.6);z-index:55}
+  .side-open{display:flex;align-items:center;gap:6px;position:fixed;left:16px;bottom:22px;z-index:50;background:linear-gradient(95deg,var(--neon),var(--cyan));color:#04140F;border:none;border-radius:30px;padding:11px 16px;font-weight:700;font-size:13px;box-shadow:0 6px 20px rgba(34,211,168,.42)}
+  main{padding:20px 14px 90px}
+}
+
+.page-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.page-head h2{font-family:'Space Grotesk',sans-serif;font-size:23px;font-weight:700;letter-spacing:-.4px}
+.page-head .sub{font-size:13px;color:var(--ink-faint);margin-top:3px;max-width:600px}
+.view{display:none}.view.on{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.info-card{background:var(--neon-tint);border:1px solid var(--line);border-left:4px solid var(--neon);border-radius:var(--r-sm);padding:12px 14px;font-size:13px;color:var(--ink-soft);margin-bottom:16px}
+.info-card b{color:var(--neon)}
+.bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.bar input,.bar select{padding:9px 12px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--card);color:var(--ink)}
+.bar input{flex:1;min-width:180px}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:22px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:15px 16px;box-shadow:var(--shadow);position:relative;overflow:hidden;cursor:pointer;transition:.15s}
+.stat:hover{border-color:var(--neon);transform:translateY(-2px)}
+.stat::after{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,var(--neon),var(--cyan),var(--violet))}
+.stat .n{font-family:'Space Grotesk',sans-serif;font-size:30px;color:var(--neon);line-height:1}
+.stat .l{font-size:11px;color:var(--ink-faint);margin-top:5px;text-transform:uppercase;letter-spacing:.5px}
+.stat.alert .n{color:var(--red)}
+
+/* tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.tile{display:block;border:1px solid var(--line);border-radius:var(--r);padding:15px;background:var(--card);box-shadow:var(--shadow);text-decoration:none;color:inherit;transition:.15s;position:relative;overflow:hidden;cursor:pointer}
+.tile::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent,var(--neon))}
+.tile:hover{transform:translateY(-3px);border-color:var(--accent,var(--neon))}
+.tile .tk{font-family:var(--mono);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--accent,var(--neon));margin-bottom:6px}
+.tile .tt{font-weight:700;font-size:15px;color:var(--ink);margin-bottom:4px}
+.tile .td{font-size:12.5px;color:var(--ink-soft);line-height:1.45}
+.tile .tgo{font-size:11.5px;color:var(--accent,var(--neon));font-weight:600;margin-top:8px;display:inline-block}
+.tile .free{position:absolute;top:10px;right:10px;font-size:9px;font-weight:700;background:var(--neon-deep);color:#04140F;border-radius:20px;padding:2px 8px;text-transform:uppercase}
+.sec-head{display:flex;align-items:center;gap:10px;margin:22px 0 12px}
+.sec-head .ic{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;color:#04140F;font-size:15px;flex:none}
+.sec-head h3{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px}
+.sec-head .sline{font-size:12px;color:var(--ink-faint)}
+
+/* hero cta */
+.home-cta{display:flex;align-items:center;gap:14px;background:linear-gradient(110deg,#0C1A18,#0F2E28 60%,#123);color:var(--ink);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;margin-bottom:18px;position:relative;overflow:hidden}
+.home-cta::after{content:"";position:absolute;right:-30px;top:-30px;width:160px;height:160px;background:radial-gradient(circle,rgba(61,245,196,.14),transparent 70%)}
+.home-cta .hc-ic{font-size:30px;flex:none}
+.home-cta .hc-tx{flex:1;min-width:0}.home-cta .hc-tx b{font-family:'Space Grotesk',sans-serif;font-size:17px;display:block;margin-bottom:2px;color:var(--neon)}
+.home-cta .hc-tx div{font-size:12.5px;opacity:.95;line-height:1.45}
+@media(max-width:640px){.home-cta{flex-wrap:wrap}.home-cta .btn{width:100%}}
+.terminal-strip{font-family:var(--mono);font-size:12px;color:var(--neon);background:#05090C;border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 14px;margin-bottom:18px;overflow-x:auto;white-space:nowrap}
+.terminal-strip .dim{color:var(--ink-faint)}
+
+/* record cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.rec{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--shadow);transition:.16s;position:relative;overflow:hidden}
+.rec::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent,var(--neon))}
+.rec:hover{border-color:var(--neon);transform:translateY(-2px)}
+.rec .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px}
+.rec .name{font-weight:700;font-size:15.5px;color:var(--neon)}
+.rec .av{width:46px;height:46px;border-radius:11px;flex:none;background:var(--neon-tint);display:grid;place-items:center;color:var(--neon);font-weight:700;font-family:'Space Grotesk',sans-serif;font-size:18px;background-size:cover;background-position:center}
+.st{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:uppercase;flex:none;letter-spacing:.3px}
+.st.done,.st.owned,.st.solved,.st.patched,.st.passed{background:rgba(34,211,168,.16);color:var(--neon)}
+.st.active,.st.progress,.st.learning{background:rgba(90,141,255,.16);color:var(--blue)}
+.st.hold,.st.todo,.st.planned{background:rgba(245,179,71,.18);color:var(--amber)}
+.st.stuck,.st.open,.st.critical{background:rgba(255,92,108,.16);color:var(--red)}
+.rec .meta{display:flex;flex-wrap:wrap;gap:5px 14px;font-size:12.5px;color:var(--ink-soft);margin:8px 0}
+.rec .meta span{display:inline-flex;align-items:center;gap:5px}
+.rec .hi{background:var(--neon-tint);border-left:3px solid var(--neon);border-radius:7px;padding:8px 10px;font-size:12.5px;font-weight:600;color:var(--neon);margin-top:8px}
+.rec .rem{background:var(--paper);border:1px solid var(--line-soft);border-radius:7px;padding:8px 10px;font-size:12.5px;color:var(--ink-soft);margin-top:8px;display:-webkit-box;-webkit-line-clamp:3;line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.rec .files{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.file-chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;background:var(--sand);border:1px solid var(--line);border-radius:20px;padding:3px 10px;color:var(--ink-soft);text-decoration:none}
+.file-chip:hover{border-color:var(--neon);color:var(--neon)}
+.rec .acts{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}
+.tagrow{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.tagrow .tg{font-family:var(--mono);font-size:11px;background:var(--neon-tint);border:1px solid var(--line);border-radius:20px;padding:2px 9px;color:var(--neon)}
+.progress-line{height:7px;border-radius:5px;background:var(--sand);overflow:hidden;margin-top:10px}
+.progress-line>i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--neon),var(--cyan))}
+.empty{text-align:center;padding:48px 20px;color:var(--ink-faint)}
+.empty h3{font-family:'Space Grotesk',sans-serif;color:var(--ink-soft);font-size:19px;margin:12px 0 6px}
+.empty p{font-size:13.5px;max-width:380px;margin:0 auto 16px}
+
+/* panels */
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+.panel h3{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px;margin-bottom:4px}
+.panel .desc{font-size:12.5px;color:var(--ink-faint);margin-bottom:16px}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line-soft);font-size:13.5px}
+.kv:last-child{border-bottom:none}.kv .k{color:var(--ink-faint)}.kv .v{font-weight:600;text-align:right}
+details.help{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px;margin-top:10px;font-size:12.5px;color:var(--ink-soft)}
+details.help summary{cursor:pointer;font-weight:600;color:var(--neon)}
+details.help ol{margin:8px 0 0 18px;line-height:1.7}
+
+/* modal */
+.overlay{position:fixed;inset:0;background:rgba(4,8,10,.66);backdrop-filter:blur(3px);z-index:100;display:none;align-items:center;justify-content:center;padding:18px}
+.overlay.on{display:flex}
+.modal{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);width:100%;max-width:600px;max-height:92dvh;overflow-y:auto;box-shadow:var(--shadow)}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--card);z-index:2}
+.modal-head h3{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:19px}
+.modal-body{padding:20px 22px}
+.modal-foot{display:flex;justify-content:flex-end;gap:10px;padding:16px 22px;border-top:1px solid var(--line);position:sticky;bottom:0;background:var(--card)}
+.dsr-ai{background:var(--neon-tint);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px;margin-bottom:14px}
+.dsr-grp{margin-bottom:6px}
+.dsr-grp>h4{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;margin:16px 0 8px;display:flex;align-items:center;gap:8px}
+.dsr-imgrow{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.dsr-img{width:74px;height:74px;border-radius:14px;border:2px solid var(--neon);background:var(--neon-tint);display:grid;place-items:center;color:var(--neon);font-size:26px;font-family:'Space Grotesk',sans-serif;background-size:cover;background-position:center}
+.cf-row{display:grid;grid-template-columns:1fr 1.4fr auto;gap:8px;margin-bottom:8px}
+.cf-row input{padding:9px 10px;border:1px solid var(--line);border-radius:7px;background:var(--paper);color:var(--ink)}
+.cf-row button{border:1px solid var(--line);background:var(--sand);border-radius:7px;color:var(--red);cursor:pointer;padding:0 12px}
+.link-pick{display:flex;flex-wrap:wrap;gap:7px;max-height:130px;overflow:auto;border:1px solid var(--line);border-radius:var(--r-sm);padding:9px;background:var(--paper)}
+.link-opt{font-size:12px;border:1px solid var(--line);border-radius:20px;padding:5px 11px;cursor:pointer;background:var(--card);color:var(--ink-soft)}
+.link-opt.on{background:var(--neon-tint);border-color:var(--neon);color:var(--neon);font-weight:600}
+.uploads{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+
+/* the per-field AI micro-button */
+.f-ai{position:relative}
+.f-ai .aibtn{position:absolute;right:6px;top:28px;border:1px solid var(--neon);background:var(--neon-tint);color:var(--neon);border-radius:6px;font-size:10px;font-weight:700;padding:3px 6px;line-height:1;cursor:pointer;font-family:var(--mono);z-index:2}
+.f-ai .aibtn:hover{background:var(--neon);color:#04140F}
+.f-ai textarea,.f-ai input{padding-right:52px}
+
+/* AI answer / assessment */
+.ai-out{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-sm);padding:14px 16px;line-height:1.65;font-size:14px}
+.as-card{border:1px solid var(--neon);border-radius:var(--r-sm);background:linear-gradient(180deg,var(--neon-tint),transparent);padding:13px;margin:6px 0 14px}
+.as-head{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.as-star{color:var(--amber);letter-spacing:2px;font-size:15px}
+.as-overall{font-size:13px;color:var(--ink);font-weight:600;flex:1;min-width:140px}
+.as-sec{margin-top:9px;font-size:12.5px}.as-sec>b{display:block;margin-bottom:3px;font-size:12px;color:var(--ink-soft)}
+.as-list{margin:0;padding-left:18px}.as-list li{margin:2px 0;line-height:1.45}
+.as-chip{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;background:var(--neon-tint);color:var(--neon);border:1px solid var(--neon);border-radius:20px;padding:1px 8px;margin-left:6px;vertical-align:middle}
+.la-loading{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink-soft);padding:14px;border:1px dashed var(--line);border-radius:var(--r-sm)}
+.la-spin{width:18px;height:18px;border:2px solid var(--line);border-top-color:var(--neon);border-radius:50%;animation:laspin .8s linear infinite}
+@keyframes laspin{to{transform:rotate(360deg)}}
+
+/* analyzer dashboard */
+.an-verdict{display:flex;align-items:center;gap:14px;padding:15px;border-radius:var(--r);color:#04140F;margin-bottom:12px}
+.an-verdict .vs{flex:none;width:66px;height:66px;border-radius:50%;display:grid;place-items:center;font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;background:rgba(0,0,0,.15);border:2px solid rgba(0,0,0,.28)}
+.an-verdict .vt{font-weight:700;font-size:16px}.an-verdict .vn{font-size:12px;opacity:.85;margin-top:2px}
+.an-bars{display:grid;gap:9px}
+.an-b{display:flex;align-items:center;gap:10px}.an-b .l{flex:none;width:150px;font-size:12.5px;font-weight:600;color:var(--ink-soft)}
+.an-b .t{flex:1;height:11px;border-radius:6px;background:var(--sand);overflow:hidden}.an-b .t>i{display:block;height:100%;border-radius:6px;transition:width .5s}
+.an-b .v{flex:none;width:42px;text-align:right;font-weight:700;font-size:12.5px;font-family:var(--mono)}
+.an-card{border:1px solid var(--line);border-radius:var(--r);background:var(--card);box-shadow:var(--shadow);padding:14px;margin-bottom:12px}
+.an-card h4{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-faint);margin-bottom:10px}
+.li-item{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;color:var(--ink-soft);padding:5px 0;border-bottom:1px solid var(--line-soft)}
+.li-item:last-child{border-bottom:none}
+.li-dot{flex:none;width:9px;height:9px;border-radius:50%;margin-top:4px}
+.li-good .li-dot{background:var(--neon)}.li-warn .li-dot{background:var(--amber)}.li-bad .li-dot{background:var(--red)}
+.li-name{font-weight:600;color:var(--ink)}
+.weak-card{border-left:3px solid var(--red);background:var(--paper);border-radius:7px;padding:9px 11px;margin-bottom:8px;font-size:12.5px}
+.weak-card.sev-low{border-left-color:var(--amber)}.weak-card.sev-med{border-left-color:var(--amber)}
+.weak-card .wi{font-weight:600;color:var(--ink)}
+.weak-card .wf{color:var(--ink-soft);margin-top:3px}
+.weak-card .wsev{font-size:9.5px;font-weight:700;text-transform:uppercase;border-radius:20px;padding:1px 7px;background:var(--sand);color:var(--ink-soft);margin-left:6px}
+.step{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--line-soft);font-size:13px}
+.step:last-child{border-bottom:none}
+.step .num{flex:none;width:22px;height:22px;border-radius:50%;background:var(--cyan);color:#04140F;display:grid;place-items:center;font-size:11px;font-weight:700}
+
+/* alerts */
+.alert{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--neon);border-radius:var(--r-sm);padding:13px 15px;margin-bottom:10px;cursor:pointer}
+.alert.urgent{border-left-color:var(--red)}
+.alert .when{flex:none;text-align:center;min-width:52px}
+.alert .when .d{font-family:'Space Grotesk',sans-serif;font-size:22px;color:var(--neon);line-height:1}
+.alert.urgent .when .d{color:var(--red)}
+.alert .when .m{font-size:10px;color:var(--ink-faint);text-transform:uppercase}
+.alert .body{flex:1;min-width:0}.alert .body .t{font-weight:600;font-size:14.5px}
+.alert .body .mt{font-size:12.5px;color:var(--ink-soft);margin-top:2px}
+.alert .tag{flex:none;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:var(--neon-tint);color:var(--neon)}
+
+/* calendar */
+.cal{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--shadow)}
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.cal-head h3{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.cal-dow{text-align:center;font-size:11px;font-weight:700;color:var(--ink-faint);padding:4px;text-transform:uppercase}
+.cal-day{min-height:72px;border:1px solid var(--line-soft);border-radius:8px;padding:5px;background:var(--paper);font-size:11px;cursor:pointer;transition:.12s}
+.cal-day:hover{border-color:var(--neon);background:var(--neon-tint)}
+.cal-day.out{opacity:.35;cursor:default}
+.cal-day.today{border-color:var(--neon);box-shadow:inset 0 0 0 1px var(--neon)}
+.cal-day .dn{font-weight:700;color:var(--ink-soft)}
+.cal-ev{background:var(--neon);color:#04140F;border-radius:4px;padding:2px 4px;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cal-ev.rem{background:var(--violet);color:#fff}
+
+/* search */
+.search-block{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);margin-bottom:18px}
+.search-block h3{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px;margin-bottom:4px}
+.search-block .desc{font-size:12.5px;color:var(--ink-faint);margin-bottom:14px}
+.search-row{display:flex;gap:10px;flex-wrap:wrap}
+.search-row input{flex:1;min-width:200px;padding:11px 13px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--paper);color:var(--ink)}
+.search-row select{padding:11px 13px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--paper);color:var(--ink)}
+.res-item{padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-sm);margin-bottom:8px;background:var(--card);cursor:pointer}
+.res-item:hover{border-color:var(--neon)}
+.res-item .rt{font-weight:600;font-size:14px}
+.res-item .rk{font-family:var(--mono);font-size:10.5px;font-weight:700;text-transform:uppercase;color:var(--neon);background:var(--neon-tint);padding:2px 8px;border-radius:20px;margin-left:6px}
+.res-item .rm{font-size:12.5px;color:var(--ink-soft);margin-top:3px}
+mark{background:var(--neon);color:#04140F;border-radius:3px;padding:0 3px;font-weight:700}
+.src-grid{display:flex;flex-wrap:wrap;gap:8px}
+.src-grid a{font-size:12.5px;border:1px solid var(--line);border-radius:20px;padding:6px 13px;text-decoration:none;color:var(--ink-soft);background:var(--card)}
+.src-grid a:hover{border-color:var(--neon);color:var(--neon)}
+.news-item{display:block;border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:8px;background:var(--card);text-decoration:none;color:inherit}
+.news-item:hover{border-color:var(--neon)}
+.news-item .nt{font-weight:600;font-size:13.5px;color:var(--neon)}
+.news-item .nm{font-size:11.5px;color:var(--ink-faint);margin-top:2px}
+.news-item .nd{font-size:12.5px;color:var(--ink-soft);margin-top:4px}
+
+/* AI provider panel */
+.aip-row{border:1px dashed var(--line);border-radius:8px;padding:10px;margin-bottom:8px}
+.aip-row.active{border-style:solid;border-color:var(--neon);background:var(--neon-tint)}
+.aip-h{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.aip-h .nm{font-weight:700;font-size:13px}.aip-h .badge{font-size:10px;font-weight:700;color:#04140F;background:var(--neon);border-radius:20px;padding:1px 8px;margin-left:auto}
+.aip-g{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.aip-g input{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:7px;background:var(--paper);color:var(--ink);font-size:13px}
+.aip-g input.k{grid-column:1/-1}
+
+/* toast + fab */
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--neon);color:#04140F;padding:12px 20px;border-radius:30px;font-size:13.5px;font-weight:700;z-index:200;opacity:0;transition:.3s;box-shadow:0 8px 30px rgba(34,211,168,.4);max-width:90vw;text-align:center}
+#toast.on{transform:translateX(-50%) translateY(0);opacity:1}
+.credit-foot{position:fixed;left:12px;bottom:8px;z-index:45;pointer-events:none}
+.credit-foot span{display:inline-block;pointer-events:auto;font-family:var(--mono);font-size:10.5px;color:#04140F;padding:4px 12px;border-radius:18px;background:linear-gradient(120deg,var(--neon),var(--cyan));box-shadow:0 6px 14px rgba(34,211,168,.3);opacity:.9}
+.credit-foot span:hover{opacity:1}
+.credit-foot span b{color:#031814}
+@media(max-width:520px){.credit-foot span{font-size:9.5px}.grid2{grid-template-columns:1fr}.userchip .nm{display:none}}
+</style>
+</head>
+<body>
+
+<!-- ============ PROFILE / GATE ============ -->
+<div class="gate" id="gateScreen">
+  <div class="gate-wrap"><div class="gate-card">
+    <div class="brand">
+      <svg width="72" height="72" viewBox="0 0 80 80" id="sealGate"></svg>
+      <div class="wordmark"><span class="en">CyberGhani</span></div>
+      <div class="prompt">root@ghani:~# ./seclab<span class="cur"></span></div>
+      <div class="slogan">Every lab, exploit &amp; lesson — in one place. Built for learning offensive &amp; defensive security from zero.</div>
+    </div>
+    <h2 class="gate-h" id="gateTitle">Set up your operator profile</h2>
+    <p class="gate-sub">Runs fully in your browser. Nothing leaves this device unless you back it up.</p>
+    <div class="av-row">
+      <div class="av" id="gateAv">?</div>
+      <div><button class="btn sm" id="gatePhotoBtn" type="button">Upload avatar</button>
+        <input type="file" id="gatePhoto" accept="image/*" class="hidden">
+        <div class="hint" style="margin-top:6px">PNG/JPG under 2 MB</div></div>
+    </div>
+    <div class="field"><label>Handle / name <span class="req">*</span></label><input id="gName" placeholder="Abdul Ghani Nazeer"></div>
+    <div class="grid2">
+      <div class="field"><label>Track <span class="req">*</span></label>
+        <select id="gTrack"><option value="">Choose…</option><option>Web App Security</option><option>Network / Infra</option><option>Red Team / Offensive</option><option>Blue Team / SOC</option><option>Malware &amp; Reverse Eng.</option><option>Cloud Security</option><option>Bug Bounty</option><option>Digital Forensics</option><option>General / Foundations</option></select></div>
+      <div class="field"><label>Level <span class="req">*</span></label>
+        <select id="gLevel"><option value="">Choose…</option><option>Absolute beginner</option><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select></div>
+    </div>
+    <div class="field"><label>Main goal (optional)</label><input id="gGoal" placeholder="e.g. Pass OSCP in 6 months / land first bug bounty"></div>
+    <button class="btn primary wide" id="gSave" type="button">Enter the lab →</button>
+    <div class="note">Tip: add a free AI key after entering to unlock the AI assistant everywhere.</div>
+  </div></div>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="appShell" class="hidden">
+  <div class="topbar">
+    <div class="tb-brand">
+      <span class="tb-logo"><span class="brandco">AGN·SEC</span><span class="logoBox"><svg width="32" height="32" viewBox="0 0 48 48" id="sealTop"></svg></span></span>
+      <div class="brand-name"><span class="en">CyberGhani</span><span class="tag">root@ghani:~# ai-seclab</span></div>
+    </div>
+    <div class="tb-slogan"><span>⌁ hack · learn · log</span></div>
+    <div class="tb-right">
+      <button class="icon-btn" id="aiKeyBtn" title="AI key">🔑</button>
+      <button class="icon-btn" id="themeBtn" title="Theme (dark / light / mono)">◐</button>
+      <button class="userchip" id="userChip"><span class="av" id="chipAv">?</span><span class="nm" id="chipName">You</span></button>
+    </div>
+  </div>
+
+  <nav class="primnav" id="topNav">
+    <button class="on" data-view="vHome">🏠 Home</button>
+    <button data-view="vAI">🤖 AI Mentor</button>
+    <button data-view="vIntake">📥 Brain Dump</button>
+    <button data-view="vAnalyzer">🎯 Vuln Analyzer</button>
+    <button data-view="vAlerts">⏰ Deadlines <span class="pill hidden" id="alertPill">0</span></button>
+    <button data-view="vTopics">📚 Topics</button>
+    <button data-view="vLabs">🧪 Labs</button>
+    <button data-view="vFindings">🐛 Findings</button>
+    <button data-view="vCtf">🏁 CTFs</button>
+    <button data-view="vWriteups">📝 Writeups</button>
+    <button data-view="vSearch">🔍 Search</button>
+  </nav>
+
+  <div class="layout">
+    <div class="scrim" id="scrim"></div>
+    <nav class="sidebar" id="sideNav">
+      <button class="side-toggle" id="sideClose">✕ Close</button>
+      <div class="nav-group">core</div>
+      <button data-view="vAI">🤖 AI Mentor</button>
+      <button data-view="vCal">🗓 Calendar</button>
+      <div class="nav-group">arsenal &amp; growth</div>
+      <button data-view="vTools">🛠 Tools Arsenal</button>
+      <button data-view="vCerts">🎓 Certifications</button>
+      <button data-view="vSkills">📈 Skill Tracker</button>
+      <div class="nav-group">explore &amp; learn</div>
+      <button data-view="vNews">📰 Cyber News</button>
+      <button data-view="vLearn">🧠 Learning Hub</button>
+      <button data-view="vMedia">🎬 Free Resources</button>
+      <div class="nav-group">app</div>
+      <button data-view="vHelp">❓ Help &amp; manual</button>
+      <button data-view="vSettings">⚙︎ Settings</button>
+      <button id="sideAiKey" class="side-key">🔑 Add / edit AI key</button>
+      <div class="nav-foot"><svg width="30" height="30" viewBox="0 0 48 48" id="sealFoot"></svg><div>CyberGhani<span>AI SecLab · AGN</span></div></div>
+    </nav>
+
+    <main>
+    <!-- HOME -->
+    <section class="view on" id="vHome">
+      <div class="page-head"><div><h2 id="homeHi">Welcome</h2><div class="sub">Your whole learning journey at a glance. Every tile jumps in. Every field has an AI button.</div></div></div>
+      <div class="terminal-strip" id="homeTerm"><span class="dim">$</span> whoami <span class="dim">→</span> loading…</div>
+      <div class="home-cta"><div class="hc-ic">🤖</div><div class="hc-tx"><b>Start here — let the AI Mentor build it</b><div>Describe anything — a topic to learn, a box you rooted, a vuln you found, a tool, a CTF — and AI drafts the record. Review, then save. Every input field also has a tiny ⚡AI to fill just that box.</div></div><button class="btn primary" onclick="go('vAI')">Open AI Mentor ›</button></div>
+      <div class="stats" id="homeStats"></div>
+      <div class="sec-head"><span class="ic" style="background:var(--neon)">✨</span><div><h3>Create</h3><div class="sline">Pick what to make — AI can fill it, or do it by hand.</div></div></div>
+      <div class="tiles" id="homeCreate"></div>
+      <div class="sec-head"><span class="ic" style="background:var(--cyan)">⤓</span><div><h3>Backup &amp; transfer</h3><div class="sline">Move your lab to another device, or keep a safe copy.</div></div></div>
+      <div class="panel">
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn primary" id="homeBackup" type="button">⤓ Download all data (.json)</button>
+          <button class="btn" id="homeRestore" type="button">⤴ Restore (.json)</button>
+          <input type="file" id="homeRestoreFile" accept="application/json" class="hidden">
+        </div>
+        <div class="info-card" style="margin-top:12px">The <b>.json</b> file is your complete backup (topics, labs, findings, tools, CTFs, writeups, notes). Open the app on another device → <b>Home → Restore</b> → pick the file.</div>
+      </div>
+      <div id="homeLists"></div>
+    </section>
+
+    <!-- DEADLINES -->
+    <section class="view" id="vAlerts">
+      <div class="page-head"><div><h2>Deadlines &amp; alerts</h2><div class="sub">Upcoming due dates across everything — cert exams, CTF end dates, lab targets — nearest first.</div></div>
+        <button class="btn sm" id="remindBtn" type="button">🔔 Enable reminders</button></div>
+      <div class="stats" id="alertStats"></div>
+      <div id="alertList"></div>
+    </section>
+
+    <!-- AI MENTOR -->
+    <section class="view" id="vAI">
+      <div class="page-head"><div><h2>AI Mentor</h2><div class="sub">Ask anything about learning security — it can read your saved records for context and give concrete, beginner-safe, hands-on steps.</div></div></div>
+      <div class="panel">
+        <div class="f-ai field"><label>Your question or goal</label><textarea id="aiAsk" style="min-height:100px" placeholder="e.g. I'm new to web security. Walk me through learning and practising IDOR from scratch — where to practise, what to read, and a small lab plan."></textarea></div>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-soft);margin-bottom:12px"><input type="checkbox" id="aiUseData" checked style="width:auto"> Let AI read my saved records for context</label>
+        <button class="btn primary" id="aiRun" type="button">🤖 Ask the mentor</button>
+        <span class="hint" id="aiAskHint" style="margin-left:8px">Needs an AI key (🔑 top-right).</span>
+        <div id="aiAnswer" style="margin-top:16px"></div>
+      </div>
+      <div class="panel">
+        <h3>Quick prompts</h3>
+        <div class="desc">Tap to drop a starter into the box above.</div>
+        <div class="tiles" id="aiPrompts"></div>
+      </div>
+    </section>
+
+    <!-- SEARCH -->
+    <section class="view" id="vSearch">
+      <div class="page-head"><div><h2>Search &amp; research</h2></div></div>
+      <div class="search-block">
+        <h3>Search everything I've saved</h3>
+        <div class="desc">Like Ctrl+F across all topics, labs, findings, tools, CTFs and writeups at once.</div>
+        <div class="search-row"><input id="localQ" placeholder="Type any keyword — vuln, tool, box name, tag, note…"></div>
+        <div id="localResults" style="margin-top:14px"></div>
+      </div>
+      <div class="search-block">
+        <h3>Search the security web</h3>
+        <div class="desc">Pick a target — it opens a scoped search.</div>
+        <div class="search-row">
+          <select id="webTarget">
+            <option value="">General web</option>
+            <option value="site:owasp.org">OWASP</option>
+            <option value="site:portswigger.net/web-security">PortSwigger Web Security Academy</option>
+            <option value="site:hackerone.com/reports OR site:hackerone.com/hacktivity">HackerOne reports</option>
+            <option value="site:book.hacktricks.xyz OR site:hacktricks.xyz">HackTricks</option>
+            <option value="site:cve.mitre.org OR site:nvd.nist.gov">CVE / NVD</option>
+            <option value="site:exploit-db.com">Exploit-DB</option>
+            <option value="site:github.com">GitHub (tools / PoCs)</option>
+            <option value="site:medium.com bug bounty">Medium writeups</option>
+          </select>
+          <input id="webQ" placeholder="e.g. blind ssrf bypass cloud metadata">
+          <button class="btn primary" id="webGo" type="button">Search</button>
+        </div>
+        <div class="hint" style="margin-top:8px;font-size:11.5px;color:var(--ink-faint)">Opens in a new tab.</div>
+      </div>
+    </section>
+
+    <!-- CYBER NEWS -->
+    <section class="view" id="vNews">
+      <div class="page-head"><div><h2>Cyber news &amp; advisories</h2><div class="sub">Latest security headlines and trusted sources you can open.</div></div><button class="btn sm" id="newsRefresh" type="button">↻ Refresh</button></div>
+      <div class="search-block">
+        <h3>Latest headlines</h3>
+        <div class="desc">Pulled live from security coverage. Tap any item to read the full report.</div>
+        <div id="newsList"><div class="hint" style="display:block">Loading headlines…</div></div>
+      </div>
+      <div class="search-block">
+        <h3>Trusted sources</h3>
+        <div class="desc">Bookmark-worthy places for a learner.</div>
+        <div class="src-grid">
+          <a href="https://thehackernews.com/" target="_blank" rel="noopener">The Hacker News</a>
+          <a href="https://www.bleepingcomputer.com/" target="_blank" rel="noopener">BleepingComputer</a>
+          <a href="https://krebsonsecurity.com/" target="_blank" rel="noopener">Krebs on Security</a>
+          <a href="https://portswigger.net/daily-swig" target="_blank" rel="noopener">The Daily Swig</a>
+          <a href="https://www.darkreading.com/" target="_blank" rel="noopener">Dark Reading</a>
+          <a href="https://www.cisa.gov/news-events/cybersecurity-advisories" target="_blank" rel="noopener">CISA advisories</a>
+          <a href="https://www.reddit.com/r/netsec/" target="_blank" rel="noopener">r/netsec</a>
+          <a href="https://github.com/trending/security" target="_blank" rel="noopener">GitHub trending</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- LEARNING HUB -->
+    <section class="view" id="vLearn">
+      <div class="page-head"><div><h2>Learning Hub</h2><div class="sub">Curated starting points for a self-taught learner. Tap any card to open.</div></div></div>
+      <div id="learnWrap"></div>
+    </section>
+
+    <!-- FREE RESOURCES -->
+    <section class="view" id="vMedia">
+      <div class="page-head"><div><h2>Free practice &amp; resources</h2><div class="sub">The best free, legal places to practise, read and watch — no paywalls. Practise only where you're authorised.</div></div></div>
+      <div id="mediaWrap"></div>
+    </section>
+
+    <!-- SKILL TRACKER -->
+    <section class="view" id="vSkills">
+      <div class="page-head"><div><h2>Skill tracker</h2><div class="sub">Rate yourself across core security skills. AI can suggest what to focus on next.</div></div><button class="btn sm" id="skillAi" type="button">🤖 What should I focus on?</button></div>
+      <div class="panel" id="skillPanel"></div>
+      <div id="skillAdvice" style="margin-top:6px"></div>
+    </section>
+
+    <!-- HELP -->
+    <section class="view" id="vHelp">
+      <div class="page-head"><div><h2>Help &amp; manual</h2><div class="sub">How every part of the lab works.</div></div></div>
+      <div id="helpWrap"></div>
+    </section>
+
+    <!-- CALENDAR -->
+    <section class="view" id="vCal">
+      <div class="page-head"><div><h2>Calendar</h2><div class="sub">All due dates across your records.</div></div></div>
+      <div class="cal"><div class="cal-head"><button class="btn sm" id="calPrev" type="button">‹ Prev</button><h3 id="calLabel">Month</h3><button class="btn sm" id="calNext" type="button">Next ›</button></div><div class="cal-grid" id="calGrid"></div></div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="view" id="vSettings">
+      <div class="page-head"><div><h2>Settings</h2></div></div>
+      <div class="panel">
+        <h3>AI provider</h3>
+        <div class="desc">Add a free key to power the AI Mentor, per-field ⚡AI, Brain Dump, the Vuln Analyzer and every assessment. Easiest: <b>Google Gemini (free)</b> or <b>OpenRouter</b> — both work directly in the browser. Keys stay only on this device.</div>
+        <div class="field"><label>Gemini API key (quick add)</label><input id="aiKey" type="password" placeholder="AIza…"></div>
+        <button class="btn" id="aiSave" type="button">Save key</button> <button class="btn sm" id="aiClear" type="button">Remove</button>
+        <details class="help"><summary>How to get a free Gemini key</summary>
+          <ol><li>Open <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">aistudio.google.com/app/apikey</a> and sign in.</li><li>Click <b>Create API key</b>.</li><li>Copy the key starting with <b>AIza…</b> and paste it above.</li></ol>
+        </details>
+      </div>
+      <div class="panel"><h3>Operator profile</h3>
+        <div class="kv"><span class="k">Handle</span><span class="v" id="setName">—</span></div>
+        <div class="kv"><span class="k">Track</span><span class="v" id="setTrack">—</span></div>
+        <div class="kv"><span class="k">Level</span><span class="v" id="setLevel">—</span></div>
+        <div class="kv"><span class="k">Goal</span><span class="v" id="setGoal">—</span></div>
+        <div style="margin-top:14px"><button class="btn" id="editProfile" type="button">Edit profile</button></div>
+      </div>
+      <div class="panel"><h3>Data</h3>
+        <div class="desc">Everything is stored privately in this browser. Back it up regularly.</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn" id="exportData" type="button">Download backup</button>
+          <button class="btn" id="importBtn" type="button">Restore backup</button>
+          <input type="file" id="importFile" accept="application/json" class="hidden">
+          <button class="btn" id="wipeData" type="button" style="border-color:var(--red);color:var(--red)">Reset everything</button>
+        </div>
+      </div>
+    </section>
+    </main>
+  </div>
+  <button class="side-open" id="sideOpen" title="More">☰ More</button>
+</div>
+
+<div id="toast"></div>
+<div class="credit-foot"><span>⌁ Built by <b>Abdul Ghani Nazeer</b></span></div>
+
+<script>
+/* ============================================================
+   CyberGhani — AI SecLab  (single-file PWA)
+   ============================================================ */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+function toast(m){const t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove("on"),2600);}
+function todayISO(){return new Date().toISOString().slice(0,10);}
+function fmtDate(iso){if(!iso)return"—";const d=new Date(iso+"T00:00:00");return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});}
+function daysFromToday(iso){if(!iso)return null;const d=new Date(iso+"T00:00:00"),t=new Date(todayISO()+"T00:00:00");return Math.round((d-t)/86400000);}
+const uid=p=>(p||"x")+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+
+/* ---- seal / logo svg ---- */
+function seal(size){size=size||48;var u="s"+Math.random().toString(36).slice(2,7);
+  return `<svg width="${size}" height="${size}" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="${u}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3DF5C4"/><stop offset="1" stop-color="#1B9E86"/></linearGradient></defs><rect x="2" y="2" width="44" height="44" rx="12" fill="#0B1519"/><rect x="3.4" y="3.4" width="41.2" height="41.2" rx="10.4" fill="none" stroke="url(#${u})" stroke-width="1.4"/><path d="M24 8 L37 13 V24 C37 32 31 37.5 24 40 C17 37.5 11 32 11 24 V13 Z" fill="none" stroke="url(#${u})" stroke-width="2" stroke-linejoin="round"/><path d="M18 23 l4 4 l8 -9" fill="none" stroke="#3DF5C4" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="24" cy="24" r="1.6" fill="#3DF5C4" opacity=".0"/></svg>`;}
+["sealTop","sealFoot"].forEach(id=>{const e=$(id);if(e)e.outerHTML=`<span id="${id}" style="display:inline-flex">${seal(id==="sealTop"?32:30)}</span>`;});
+$("sealGate").outerHTML=`<span id="sealGate">${seal(72)}</span>`;
+
+/* ---- storage ---- */
+const NS="cyberghani.";
+const DB={
+  get(k,def){try{const v=localStorage.getItem(NS+k);return v?JSON.parse(v):def;}catch(e){return def;}},
+  set(k,v){try{localStorage.setItem(NS+k,JSON.stringify(v));return true;}catch(e){toast("Storage full — remove some attachments or back up");return false;}}
+};
+let state={
+  profile:null, aikey:null, calMonth:new Date(),
+  topics:[], labs:[], findings:[], tools:[], ctf:[], certs:[], writeups:[],
+  reminders:[], skills:null
+};
+const COLLECTIONS=["topics","labs","findings","tools","ctf","certs","writeups","reminders"];
+function loadState(){
+  state.profile=DB.get("profile",null);
+  state.aikey=DB.get("aikey",null);
+  COLLECTIONS.forEach(k=>state[k]=DB.get(k,[]));
+  state.skills=DB.get("skills",null);
+}
+function saveCol(k){DB.set(k,state[k]);}
+
+/* ============ AI CORE (multi-provider + fallback + CORS proxy) ============ */
+const AI_DEFAULTS={
+  gemini:{label:"Google Gemini",model:"gemini-2.5-flash"},
+  openrouter:{label:"OpenRouter",model:"google/gemini-2.0-flash-exp:free"},
+  grok:{label:"xAI Grok",model:"grok-4.3"},
+  openai:{label:"OpenAI",model:"gpt-4o-mini"},
+  deepseek:{label:"DeepSeek",model:"deepseek-chat"},
+  claude:{label:"Claude (in-app preview only — no key)",model:"claude-sonnet-4-6"}
+};
+const AI_ORDER=["gemini","openrouter","grok","openai","deepseek","claude"];
+
+/* Optional CORS proxy. Gemini + OpenRouter allow direct browser calls; OpenAI, DeepSeek
+   and xAI/Grok usually DON'T (browser CORS) — a proxy forwards the request for them.
+   Set it in Settings, or:  localStorage.setItem('cyberghani.corsproxy','https://corsproxy.io/?url=')
+   WARNING: the proxy can see your request incl. the API key — only use one you trust. */
+function corsProxy(){return (localStorage.getItem(NS+"corsproxy")||"").trim();}
+function proxied(u){const p=corsProxy();if(!p)return u;if(p.includes("{url}"))return p.replace("{url}",encodeURIComponent(u));if(/[?&=]$/.test(p))return p+encodeURIComponent(u);return p+u;}
+function aiCfg(){
+  let c=DB.get("aiProviders",null);
+  if(!c)c={active:"gemini",providers:{}};
+  AI_ORDER.forEach(p=>{c.providers[p]=Object.assign({key:"",model:AI_DEFAULTS[p].model},c.providers[p]||{});});
+  if(!c.providers.gemini.key&&state.aikey&&state.aikey!=="MULTI")c.providers.gemini.key=state.aikey;
+  return c;
+}
+function aiSaveCfg(c){
+  DB.set("aiProviders",c);
+  const any=AI_ORDER.some(p=>c.providers[p].key.trim());
+  state.aikey=c.providers.gemini.key.trim()||(any?"MULTI":null);
+  DB.set("aikey",state.aikey);
+}
+function aiChain(){const c=aiCfg();const a=c.active;const avail=p=>p==="claude"?(a==="claude"):!!(c.providers[p]&&c.providers[p].key.trim());return [a,...AI_ORDER.filter(p=>p!==a)].filter(avail);}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function aiCallProvider(p,prompt,jsonMode){
+  const c=aiCfg().providers[p],key=(c.key||"").trim();if(p!=="claude"&&!key)throw new Error(p+": no key");
+  try{
+    if(p==="claude"){
+      const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:c.model||"claude-sonnet-4-6",max_tokens:4096,messages:[{role:"user",content:prompt}]})});
+      if(!r.ok)throw new Error("Claude "+r.status+" "+(await r.text()).slice(0,140));
+      const d=await r.json();
+      return (d.content||[]).filter(b=>b&&b.type==="text").map(b=>b.text).join("")||"";
+    }
+    if(p==="gemini"){
+      const body={contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.35}};
+      if(jsonMode)body.generationConfig.responseMimeType="application/json";
+      const models=[c.model,"gemini-2.0-flash","gemini-1.5-flash"].filter((m,i,a)=>m&&a.indexOf(m)===i);
+      let le;
+      for(const m of models){for(let a=0;a<3;a++){
+        const u="https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(m)+":generateContent?key="+encodeURIComponent(key);
+        const r=await fetch(proxied(u),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+        if(r.ok){const d=await r.json();return d?.candidates?.[0]?.content?.parts?.[0]?.text||"";}
+        const t=(await r.text()).slice(0,120);le=new Error("gemini "+r.status+" "+t);
+        if(r.status===429||r.status===503){await sleep(600*(a+1));continue;}
+        if(r.status===500)break; throw le;
+      }}
+      throw le;
+    }
+    const ep={
+      openrouter:"https://openrouter.ai/api/v1/chat/completions",
+      grok:"https://api.x.ai/v1/chat/completions",
+      openai:"https://api.openai.com/v1/chat/completions",
+      deepseek:"https://api.deepseek.com/chat/completions"
+    }[p];
+    const body={model:c.model,temperature:0.35,max_tokens:4096,messages:[{role:"user",content:prompt}]};
+    if(jsonMode)body.response_format={type:"json_object"};
+    const hd={"Content-Type":"application/json","Authorization":"Bearer "+key};
+    if(p==="openrouter"){hd["HTTP-Referer"]=(location&&location.origin)||"https://cyberghani.app";hd["X-Title"]="CyberGhani SecLab";}
+    const r=await fetch(proxied(ep),{method:"POST",headers:hd,body:JSON.stringify(body)});
+    if(!r.ok)throw new Error(AI_DEFAULTS[p].label+" "+r.status+" "+(await r.text()).slice(0,110));
+    const d=await r.json();return d?.choices?.[0]?.message?.content||"";
+  }catch(e){
+    if(e instanceof TypeError && /fetch|network|load failed/i.test(e.message)){
+      throw new Error(AI_DEFAULTS[p].label+": request blocked (CORS or no network). "+(corsProxy()?"Your proxy may be down — try another.":"This provider often can't be called directly from a browser — use Gemini/OpenRouter, deploy the page (e.g. GitHub Pages) instead of a preview, or set a CORS proxy in Settings."));
+    }
+    throw e;
+  }
+}
+async function aiCall(prompt,jsonMode){
+  const chain=aiChain();if(!chain.length)throw new Error("no-key");
+  let last;
+  for(const p of chain){try{const o=await aiCallProvider(p,prompt,jsonMode);if(o&&o.trim())return o;last=new Error(p+": empty");}catch(e){last=e;}}
+  throw last||new Error("All AI providers failed");
+}
+function parseJSON(t){return JSON.parse(String(t).replace(/```json|```/g,"").trim());}
+function aiPick(obj){const n={};Object.keys(obj||{}).forEach(k=>{n[k.toLowerCase().replace(/[^a-z0-9]/g,"")]=obj[k];});return(...al)=>{for(const a of al){const v=n[a.toLowerCase().replace(/[^a-z0-9]/g,"")];if(v!=null&&String(v).trim()!=="")return Array.isArray(v)?v.join(", "):String(v);}return"";};}
+function mdLite(t){t=esc(t);t=t.replace(/```([\s\S]*?)```/g,(m,c)=>'<pre style="background:#05090C;border:1px solid var(--line);border-radius:8px;padding:10px;overflow:auto;font-family:var(--mono);font-size:12.5px;color:var(--neon)">'+c.trim()+'</pre>');t=t.replace(/`([^`]+)`/g,'<code style="font-family:var(--mono);background:var(--sand);padding:1px 5px;border-radius:4px;font-size:12.5px">$1</code>');t=t.replace(/^\s*[\*\-]\s+(.*)$/gm,"• $1");t=t.replace(/\*\*(.+?)\*\*/g,"<b>$1</b>");t=t.replace(/^#{1,6}\s*(.*)$/gm,"<b>$1</b>");return t.replace(/\n/g,"<br>");}
+function hasKey(){return !!aiChain().length;}
+
+/* ============ ROUTING ============ */
+const VIEWS=["vHome","vAlerts","vAI","vIntake","vAnalyzer","vTopics","vLabs","vFindings","vCtf","vWriteups","vTools","vCerts","vSkills","vSearch","vCal","vNews","vLearn","vMedia","vHelp","vSettings"];
+function go(v){
+  document.querySelectorAll("[data-view]").forEach(x=>x.classList.toggle("on",x.dataset.view===v));
+  VIEWS.forEach(id=>{const el=$(id);if(el)el.classList.toggle("on",id===v);});
+  const r={vTopics:"topics",vLabs:"labs",vFindings:"findings",vCtf:"ctf",vWriteups:"writeups",vTools:"tools",vCerts:"certs"}[v];
+  if(r&&FACTORIES[r])FACTORIES[r].render();
+  if(v==="vHome")renderHome();
+  if(v==="vAlerts")renderAlerts();
+  if(v==="vCal")renderCalendar();
+  if(v==="vNews")loadNews();
+  if(v==="vLearn")renderLearn();
+  if(v==="vMedia")renderMedia();
+  if(v==="vHelp")renderHelp();
+  if(v==="vSkills")renderSkills();
+  if(v==="vSettings")renderSettings();
+  window.scrollTo(0,0);closeSide();
+}
+window.go=go;
+function navClick(e){const b=e.target.closest("button[data-view]");if(b)go(b.dataset.view);}
+$("topNav").addEventListener("click",navClick);
+$("sideNav").addEventListener("click",navClick);
+function openSide(){$("sideNav").classList.add("open");$("scrim").classList.add("show");}
+function closeSide(){$("sideNav").classList.remove("open");$("scrim").classList.remove("show");}
+$("sideOpen").onclick=openSide;$("sideClose").onclick=closeSide;$("scrim").onclick=closeSide;
+$("userChip").onclick=()=>go("vSettings");
+function openAiKey(){go("vSettings");setTimeout(()=>{const k=$("aiKey");if(k){k.scrollIntoView({behavior:"smooth",block:"center"});k.focus();}},120);}
+$("aiKeyBtn").onclick=openAiKey;$("sideAiKey").onclick=openAiKey;
+$("themeBtn").onclick=()=>{const order=["","light","mono"];const cur=document.documentElement.getAttribute("data-theme")||"";const next=order[(order.indexOf(cur)+1)%order.length];if(next)document.documentElement.setAttribute("data-theme",next);else document.documentElement.removeAttribute("data-theme");localStorage.setItem(NS+"theme",next);toast(next?("Theme: "+next):"Theme: dark");};
+
+/* ============ PROFILE / GATE ============ */
+let pendingPhoto=null;
+function paintAvatar(el,name,photo){if(!el)return;if(photo){el.style.backgroundImage=`url(${photo})`;el.textContent="";}else{el.style.backgroundImage="";el.textContent=(name||"?").trim().charAt(0).toUpperCase()||"?";}}
+function openGate(){
+  const p=state.profile||{};
+  $("gName").value=p.name||"";$("gTrack").value=p.track||"";$("gLevel").value=p.level||"";$("gGoal").value=p.goal||"";
+  pendingPhoto=p.photo||null;paintAvatar($("gateAv"),p.name,p.photo);
+  $("gateTitle").textContent=(p.track&&p.level)?"Edit your operator profile":"Set up your operator profile";
+}
+$("gatePhotoBtn").onclick=()=>$("gatePhoto").click();
+$("gatePhoto").onchange=e=>{const f=e.target.files[0];if(!f)return;if(f.size>2*1024*1024){toast("Image under 2 MB");return;}const r=new FileReader();r.onload=()=>{pendingPhoto=r.result;paintAvatar($("gateAv"),$("gName").value,pendingPhoto);};r.readAsDataURL(f);};
+$("gSave").onclick=()=>{
+  const name=$("gName").value.trim(),track=$("gTrack").value,level=$("gLevel").value;
+  if(!name||!track||!level){toast("Handle, track and level are required");return;}
+  state.profile={name,track,level,goal:$("gGoal").value.trim(),photo:pendingPhoto};
+  DB.set("profile",state.profile);enterApp();
+};
+function route(){
+  loadState();
+  const t=localStorage.getItem(NS+"theme");if(t)document.documentElement.setAttribute("data-theme",t);
+  if(!state.profile||!state.profile.track){$("gateScreen").classList.remove("hidden");$("appShell").classList.add("hidden");openGate();return;}
+  enterApp();
+}
+function enterApp(){
+  $("gateScreen").classList.add("hidden");$("appShell").classList.remove("hidden");
+  paintAvatar($("chipAv"),state.profile.name,state.profile.photo);
+  $("chipName").textContent=(state.profile.name||"You").split(" ").slice(0,2).join(" ");
+  $("aiKey").value=(state.aikey&&state.aikey!=="MULTI")?state.aikey:"";
+  $("homeHi").textContent="Welcome, "+((state.profile.name||"").split(" ")[0]||"operator");
+  buildAiPanel();
+  renderHome();renderAll();
+}
+function renderAll(){renderAlerts();COLLECTIONS.forEach(k=>{if(FACTORIES[k])FACTORIES[k].render();});renderHome();}
+
+/* ============ RECORD FACTORY ============ */
+/* config drives: fields (with per-field AI hints), list card, modal, AI fill, AI assess */
+const FACTORIES={};
+function buildFactory(cfg){
+  FACTORIES[cfg.key]=cfg;
+  const ALLF=[]; cfg.groups.forEach(G=>G.f.forEach(x=>ALLF.push(x[0])));
+  cfg.ALLF=ALLF;
+  let data={},custom=[],links=[],photo=null,editId="";
+
+  cfg.render=function(){
+    const box=$(cfg.view+"List"); if(!box)return;
+    const se=$(cfg.view+"Search"); const q=(se&&se.value||"").toLowerCase();
+    const fsel=$(cfg.view+"Filter"); const fv=fsel?fsel.value:"ALL";
+    let rows=(state[cfg.key]||[]).filter(r=>JSON.stringify(r).toLowerCase().includes(q));
+    if(cfg.statusField&&fv!=="ALL")rows=rows.filter(r=>r[cfg.statusField]===fv);
+    if(!rows.length){box.innerHTML=`<div class="empty" style="grid-column:1/-1">${seal(56)}<h3>${(state[cfg.key]&&state[cfg.key].length)?"Nothing matches":("No "+cfg.plural+" yet")}</h3><p>${esc(cfg.empty)}</p><button class="btn primary" onclick="FACTORIES['${cfg.key}'].open(null)">${cfg.addLabel}</button></div>`;return;}
+    box.innerHTML=rows.map(r=>cardHTML(r)).join("");
+  };
+  function cardHTML(r){
+    const av=cfg.avatar?(r._photo?`<div class="av" style="background-image:url(${r._photo})"></div>`:`<div class="av">${esc((cfg.name(r)||"?").charAt(0).toUpperCase())}</div>`):"";
+    const stv=cfg.statusField?r[cfg.statusField]:"";
+    const stCls=(stv||"").toLowerCase().replace(/[^a-z]/g,"");
+    const chips=(cfg.chips||[]).map(c=>r[c.k]?`<span>${c.ic||""} ${esc(r[c.k])}</span>`:"").join("");
+    const hi=(cfg.highlight||[]).map(h=>r[h.k]?`<div class="${h.warn?'rem':'hi'}">${h.ic||""} ${esc(r[h.k])}</div>`:"").join("");
+    const prog=(cfg.progressField&&r[cfg.progressField]!=null&&r[cfg.progressField]!=="")?`<div class="progress-line"><i style="width:${Math.max(0,Math.min(100,parseInt(r[cfg.progressField])||0))}%"></i></div>`:"";
+    const tags=(r._tags||[]).map(t=>`<span class="tg">${esc(t)}</span>`).join("");
+    const asChip=r._assess?assessChip(r._assess):"";
+    const lks=(r._links||[]).map(ref=>{const n=refName(ref);return n?`<span class="file-chip">🔗 ${esc(n)}</span>`:"";}).join("");
+    return `<div class="rec" style="--accent:${cfg.accent}">
+      <div class="top">${av?`<div style="display:flex;gap:11px;align-items:center;flex:1;min-width:0">${av}<div class="name">${esc(cfg.name(r)||cfg.noun)}${asChip}</div></div>`:`<div class="name">${esc(cfg.name(r)||cfg.noun)}${asChip}</div>`}${stv?`<span class="st ${stCls}">${esc(stv)}</span>`:""}</div>
+      ${chips?`<div class="meta">${chips}</div>`:""}
+      ${prog}${hi}
+      ${r._assess&&r._assess.overall?`<div class="rem">🩺 ${esc(r._assess.overall)}</div>`:""}
+      ${tags?`<div class="tagrow">${tags}</div>`:""}${lks?`<div class="files">${lks}</div>`:""}
+      <div class="acts"><button class="btn sm primary" onclick="FACTORIES['${cfg.key}'].open('${r.id}')">Open</button><button class="btn sm" onclick="FACTORIES['${cfg.key}'].dl('${r.id}')">⤓</button><button class="btn sm" onclick="FACTORIES['${cfg.key}'].del('${r.id}')" style="color:var(--red)">Delete</button></div></div>`;
+  }
+
+  function fieldHTML(k,label,type){
+    const long=type==="long";
+    const inp=long?`<textarea data-k="${k}">${esc(data[k]||"")}</textarea>`
+      :type==="date"?`<input data-k="${k}" type="date" value="${esc(data[k]||"")}">`
+      :type&&type.select?`<select data-k="${k}">${type.select.map(o=>`<option ${data[k]===o?'selected':''}>${o}</option>`).join("")}</select>`
+      :`<input data-k="${k}" value="${esc(data[k]||"")}">`;
+    const canAi=type!=="date"&&!(type&&type.select);
+    return `<div class="field f-ai" style="${long?'grid-column:1/-1':''}"><label>${esc(label)}</label>${inp}${canAi?`<button class="aibtn" type="button" data-fai="${k}">⚡AI</button>`:""}</div>`;
+  }
+  function groupsHTML(){
+    return cfg.groups.map(G=>`<div class="dsr-grp"><h4>${G.ic} ${esc(G.g)}</h4><div class="grid2">${G.f.map(x=>fieldHTML(x[0],x[1],x[2])).join("")}</div></div>`).join("");
+  }
+
+  function renderModal(){
+    let ov=$(cfg.view+"Ov");
+    if(!ov){ov=document.createElement("div");ov.id=cfg.view+"Ov";ov.className="overlay";document.body.appendChild(ov);}
+    ov.innerHTML=`<div class="modal"><div class="modal-head"><h3 id="${cfg.view}Title">New ${cfg.noun}</h3><button class="icon-btn" id="${cfg.view}X">✕</button></div>
+      <div class="modal-body">
+        <div class="dsr-ai">
+          <label style="font-weight:600;font-size:12.5px;color:var(--ink-soft)">✨ AI quick-fill — describe it, or paste notes</label>
+          <textarea id="${cfg.view}Src" style="min-height:78px;margin-top:6px;width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink)" placeholder="${esc(cfg.aiPlaceholder)}"></textarea>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+            <button class="btn primary sm" id="${cfg.view}Ai" type="button">🤖 Fill all fields</button>
+            ${cfg.assessKind?`<button class="btn violet sm" id="${cfg.view}Assess" type="button">🩺 AI assessment</button>`:""}
+          </div>
+          <div class="hint" style="margin-top:6px">Every field below also has its own ⚡AI. Needs an AI key (🔑).</div>
+        </div>
+        ${cfg.assessKind?`<div id="${cfg.view}AssessBox">${data._assess?assessCardHTML(data._assess):""}</div>`:""}
+        ${cfg.avatar?`<div class="dsr-imgrow"><div class="dsr-img" id="${cfg.view}Av" ${photo?`style="background-image:url(${photo})"`:""}>${photo?"":cfg.emoji}</div><div><button class="btn sm" id="${cfg.view}Photo" type="button">Upload image</button><input id="${cfg.view}PhotoF" type="file" accept="image/*" class="hidden"><div class="hint" style="margin-top:6px">under 2 MB</div></div></div>`:""}
+        <div id="${cfg.view}Form">${groupsHTML()}</div>
+        <div class="field"><label>Tags <span style="font-weight:400;color:var(--ink-faint)">(comma separated)</span></label><div class="f-ai"><input id="${cfg.view}Tags" value="${esc((data._tags||[]).join(", "))}" placeholder="e.g. web, idor, easy"><button class="aibtn" type="button" id="${cfg.view}TagsAi">⚡AI</button></div></div>
+        <div class="field"><label>Link to other records</label><div class="link-pick" id="${cfg.view}Links"></div></div>
+        <div class="field"><label>Your own fields</label><div id="${cfg.view}Custom"></div><button class="btn sm" id="${cfg.view}AddF" type="button">＋ Add field</button></div>
+      </div>
+      <div class="modal-foot"><button class="btn" id="${cfg.view}Cancel">Cancel</button><button class="btn primary" id="${cfg.view}Save">Save ${cfg.noun}</button></div></div>`;
+    bindForm();renderCustom();renderLinks();
+    const close=()=>ov.classList.remove("on");
+    $(cfg.view+"X").onclick=$(cfg.view+"Cancel").onclick=close;
+    ov.addEventListener("click",e=>{if(e.target===ov)close();});
+    $(cfg.view+"AddF").onclick=()=>{custom.push({label:"",value:""});renderCustom();};
+    $(cfg.view+"Ai").onclick=aiFillAll;
+    $(cfg.view+"Save").onclick=save;
+    $(cfg.view+"TagsAi").onclick=()=>fillOneField("_tags",$(cfg.view+"Tags"),true);
+    // per-field AI buttons
+    ov.querySelectorAll("[data-fai]").forEach(b=>b.onclick=()=>{const k=b.dataset.fai;const el=ov.querySelector(`#${cfg.view}Form [data-k="${k}"]`);fillOneField(k,el);});
+    if(cfg.avatar){
+      $(cfg.view+"Photo").onclick=()=>$(cfg.view+"PhotoF").click();
+      $(cfg.view+"PhotoF").onchange=e=>{const f=e.target.files[0];if(!f)return;if(f.size>2*1024*1024){toast("Image under 2 MB");return;}const r=new FileReader();r.onload=()=>{photo=r.result;const av=$(cfg.view+"Av");av.style.backgroundImage="url("+photo+")";av.textContent="";};r.readAsDataURL(f);};
+    }
+    if(cfg.assessKind){const ab=$(cfg.view+"Assess");if(ab)ab.onclick=runAssess;}
+    ov.classList.add("on");
+  }
+  function bindForm(){document.querySelectorAll(`#${cfg.view}Form [data-k]`).forEach(el=>el.oninput=el.onchange=()=>{data[el.dataset.k]=el.value;});}
+  function paintForm(){ALLF.forEach(k=>{const el=document.querySelector(`#${cfg.view}Form [data-k="${k}"]`);if(el)el.value=data[k]||"";});}
+  function renderCustom(){const box=$(cfg.view+"Custom");if(!box)return;box.innerHTML=custom.map((c,i)=>`<div class="cf-row"><input placeholder="Field" value="${esc(c.label||'')}" data-ci="${i}" data-ck="label"><input placeholder="Detail" value="${esc(c.value||'')}" data-ci="${i}" data-ck="value"><button data-rm="${i}" type="button">✕</button></div>`).join("");box.querySelectorAll("input").forEach(i=>i.oninput=()=>{custom[+i.dataset.ci][i.dataset.ck]=i.value;});box.querySelectorAll("button[data-rm]").forEach(b=>b.onclick=()=>{custom.splice(+b.dataset.rm,1);renderCustom();});}
+  function renderLinks(){
+    const box=$(cfg.view+"Links");if(!box)return;
+    const me=cfg.key+":"+editId;
+    const list=allRecords().filter(o=>o.ref!==me);
+    if(!list.length){box.innerHTML='<span class="hint" style="display:inline">Add other records first to link them here.</span>';return;}
+    box.innerHTML=list.map(o=>`<span class="link-opt ${links.indexOf(o.ref)>=0?'on':''}" data-ref="${o.ref}">${links.indexOf(o.ref)>=0?'✓ ':''}${esc(o.name)} <span style="opacity:.6">· ${o.label}</span></span>`).join("");
+    box.querySelectorAll(".link-opt").forEach(el=>el.onclick=()=>{const r=el.dataset.ref,i=links.indexOf(r);if(i>=0)links.splice(i,1);else links.push(r);renderLinks();});
+  }
+
+  async function fillOneField(k,el,tags){
+    if(!hasKey()){toast("Add an AI key (🔑)");return;}
+    const src=($(cfg.view+"Src").value||"").trim();
+    const ctxFields=ALLF.filter(x=>data[x]).map(x=>x+": "+data[x]).join("\n");
+    const label=(cfg.groups.flatMap(G=>G.f).find(f=>f[0]===k)||[k,tags?"tags":k])[1];
+    if(el)el.dataset.busy="1";
+    const prompt=`You are a cybersecurity study mentor helping fill ONE field for a ${cfg.noun} record. Return ONLY the plain text value for the field "${label}" — no labels, no quotes, no markdown, concise and factual. ${tags?"Return 3-6 short lowercase comma-separated tags.":""}
+Context of what this record is:
+${src?("NOTE: "+src+"\n"):""}${ctxFields?("OTHER FIELDS:\n"+ctxFields):"(few fields filled yet)"}
+Track: ${state.profile?.track||""} · Level: ${state.profile?.level||""}`;
+    try{
+      const out=(await aiCall(prompt,false)).trim().replace(/^["']|["']$/g,"");
+      if(tags){data._tags=out.split(",").map(t=>t.trim()).filter(Boolean);if(el)el.value=data._tags.join(", ");}
+      else{data[k]=out;if(el)el.value=out;}
+      toast("Filled "+label.toLowerCase());
+    }catch(e){toast("AI error: "+(e.message=="no-key"?"add your key":e.message));}
+  }
+
+  async function aiFillAll(){
+    if(!hasKey()){toast("Add an AI key (🔑)");return;}
+    const src=($(cfg.view+"Src").value||"").trim();if(src.length<6){toast("Describe it first");return;}
+    const btn=$(cfg.view+"Ai"),o=btn.textContent;btn.disabled=true;btn.textContent="Reading…";
+    try{
+      const prompt=`${cfg.aiPersona} From the notes, extract a structured ${cfg.noun} record. Return ONLY valid JSON, "" when unknown, NEVER invent. Keys exactly:\n${ALLF.join(", ")}${cfg.statusField?`\n"${cfg.statusField}" must be one of: ${(cfg.groups.flatMap(G=>G.f).find(f=>f[0]===cfg.statusField)||[])[2]?.select?.join(" / ")||""}.`:""}\nKeep values concise and practical for a ${state.profile?.level||"learner"}.\nNOTES:\n${src.slice(0,10000)}`;
+      const j=parseJSON(await aiCall(prompt,true));
+      const pick=aiPick(j);
+      ALLF.forEach(k=>{const v=pick(k);if(v)data[k]=v;});
+      paintForm();toast("Filled — review & save");
+    }catch(e){toast("AI error: "+(e.message=="no-key"?"add your key":e.message));}
+    btn.disabled=false;btn.textContent=o;
+  }
+
+  async function runAssess(){
+    if(!hasKey()){toast("Add an AI key (🔑)");return;}
+    const b=$(cfg.view+"Assess"),o=b.textContent;b.disabled=true;b.textContent="Analysing…";
+    try{const a=await dossierAssess(cfg.assessKind,Object.assign({},data));data._assess=a;$(cfg.view+"AssessBox").innerHTML=assessCardHTML(a);toast("Assessment ready — Save to keep it");}
+    catch(e){toast("AI error: "+e.message);}
+    b.disabled=false;b.textContent=o;
+  }
+
+  function save(){
+    if(!(cfg.name(data)||"").trim()){toast(cfg.reqMsg||"Name / title is required");return;}
+    const tags=($(cfg.view+"Tags").value||"").split(",").map(t=>t.trim()).filter(Boolean);
+    const obj=Object.assign({},data,{id:editId||uid(cfg.key[0]),_tags:tags,_links:links.slice(),custom:custom.filter(c=>c.label||c.value)});
+    if(cfg.avatar)obj._photo=photo;
+    const arr=state[cfg.key]=state[cfg.key]||[];const i=arr.findIndex(x=>x.id===obj.id);
+    if(i>=0)arr[i]=obj;else arr.unshift(obj);
+    saveCol(cfg.key);$(cfg.view+"Ov").classList.remove("on");cfg.render();renderHome();renderAlerts();
+    toast(cfg.noun.charAt(0).toUpperCase()+cfg.noun.slice(1)+" saved");
+  }
+
+  cfg.open=function(id){
+    const rec=id?(state[cfg.key]||[]).find(x=>x.id===id):null;
+    editId=rec?rec.id:"";data=rec?Object.assign({},rec):{};custom=(rec&&rec.custom||[]).map(c=>({...c}));links=(rec&&rec._links||[]).slice();photo=rec?rec._photo||null:null;
+    if(rec&&rec._tags)data._tags=rec._tags.slice();
+    renderModal();
+    $(cfg.view+"Title").textContent=rec?("Edit "+cfg.noun):("New "+cfg.noun);
+  };
+  cfg.del=function(id){if(!confirm("Delete this "+cfg.noun+"?"))return;state[cfg.key]=(state[cfg.key]||[]).filter(x=>x.id!==id);saveCol(cfg.key);cfg.render();renderHome();renderAlerts();toast("Deleted");};
+  cfg.dl=function(id){const r=(state[cfg.key]||[]).find(x=>x.id===id);if(!r)return;const blob=new Blob([JSON.stringify({type:cfg.key,record:r,app:"CyberGhani",at:new Date().toISOString()},null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(cfg.key+"-"+String(cfg.name(r)||"record").replace(/[^a-z0-9]+/gi,"-").slice(0,40))+".json";a.click();toast("Downloaded");};
+
+  // wire the section shell buttons after paint
+  cfg.paint=function(){
+    let sec=$(cfg.view);
+    if(!sec){sec=document.createElement("section");sec.className="view";sec.id=cfg.view;document.querySelector("main").appendChild(sec);}
+    sec.innerHTML=`<div class="page-head"><div><h2>${cfg.icon} ${esc(cfg.title)}</h2><div class="sub">${esc(cfg.sub)}</div></div><button class="btn primary" id="${cfg.view}Add" type="button">${cfg.addLabel}</button></div>
+      ${cfg.info?`<div class="info-card">${cfg.info}</div>`:""}
+      <div class="bar"><input id="${cfg.view}Search" placeholder="Search ${esc(cfg.plural)}, tags, notes…">${cfg.statusField?`<select id="${cfg.view}Filter"><option value="ALL">All</option>${(cfg.groups.flatMap(G=>G.f).find(f=>f[0]===cfg.statusField)||[])[2]?.select?.map(o=>`<option>${o}</option>`).join("")||""}</select>`:""}</div>
+      <div class="cards" id="${cfg.view}List"></div>`;
+    $(cfg.view+"Add").onclick=()=>cfg.open(null);
+    $(cfg.view+"Search").addEventListener("input",cfg.render);
+    if($(cfg.view+"Filter"))$(cfg.view+"Filter").addEventListener("change",cfg.render);
+    cfg.render();
+  };
+}
+
+/* ---- cross-record helpers ---- */
+function allRecords(){
+  const out=[];
+  Object.values(FACTORIES).forEach(cfg=>{(state[cfg.key]||[]).forEach(r=>out.push({ref:cfg.key+":"+r.id,name:cfg.name(r)||cfg.noun,label:cfg.title.replace(/s$/,"")}));});
+  return out;
+}
+function refName(ref){const i=ref.indexOf(":");const k=ref.slice(0,i),id=ref.slice(i+1);const cfg=FACTORIES[k];if(!cfg)return null;const r=(state[k]||[]).find(x=>x.id===id);return r?cfg.name(r):null;}
+window.gotoRef=function(ref){const i=ref.indexOf(":");const k=ref.slice(0,i),id=ref.slice(i+1);const cfg=FACTORIES[k];if(cfg){go(cfg.view);cfg.open(id);}};
+
+/* ============ ASSESSMENT (AI) ============ */
+async function dossierAssess(kind,rec){
+  const fields=Object.keys(rec||{}).filter(k=>k[0]!=="_"&&k!=="id"&&k!=="custom"&&typeof rec[k]==="string"&&rec[k].trim()).map(k=>k+": "+rec[k]).join("\n");
+  if(fields.replace(/\s/g,"").length<6)throw new Error("fill some fields first");
+  const P={
+    topic:["a LEARNING TOPIC","how well the learner grasps it, gaps, what to practise next, common pitfalls, and concrete resources / labs to solidify it"],
+    lab:["a LAB / MACHINE the learner worked on","the key techniques involved, what they likely learned, weak spots to revisit, and follow-up boxes / concepts to try next"],
+    finding:["a VULNERABILITY / FINDING (in a lab or authorised target)","severity & impact reasoning, root cause, how the exploit works conceptually, how to fix it, and the learning value"],
+    tool:["a SECURITY TOOL the learner is adopting","what it's best at, where it fits in a workflow, common flags to master, gotchas, and a small practice exercise"],
+    ctf:["a CTF the learner joined","the categories to prioritise given their level, study areas to prep, and how to review it afterward"],
+    cert:["a CERTIFICATION the learner is preparing for","realistic readiness given the profile, the biggest gaps, a study focus, and hands-on practice to prioritise"],
+    writeup:["a WRITEUP / KNOWLEDGE-BASE note","the core technique, why it matters, how to reproduce it safely in a lab, and related concepts to study"]
+  }[kind]||["a record","a practical assessment"];
+  const prompt=`You are a senior cybersecurity mentor giving a candid, practical, ethical assessment of ${P[0]} for a self-taught learner (track: ${state.profile?.track}, level: ${state.profile?.level}). Base it ONLY on the notes; never invent. Focus on legal, authorised, educational practice. Provide: ${P[1]}.
+Return ONLY valid JSON with keys: rating (integer 1-5, learner's mastery / readiness; 3 if unclear), overall (1-2 sentences), reputation (short label like difficulty/impact), strengths (array), weaknesses (array of gaps to close), risks (array — ethical/legal/safety notes), tips (array of concrete next actions). Use "" or [] when unknown.
+RECORD:
+${fields}`;
+  const a=parseJSON(await aiCall(prompt,true));
+  if(!a||typeof a!=="object")throw new Error("AI returned nothing");
+  return a;
+}
+function assessCardHTML(a){
+  if(!a)return"";
+  const li=arr=>(arr&&arr.length)?'<ul class="as-list">'+arr.map(x=>"<li>"+esc(String(x))+"</li>").join("")+"</ul>":"";
+  const r=Math.max(0,Math.min(5,parseInt(a.rating)||0));const stars="★".repeat(r)+"☆".repeat(5-r);
+  return '<div class="as-card"><div class="as-head"><span class="as-star">'+stars+'</span><span class="as-overall">'+esc(a.overall||"Assessment")+"</span></div>"+
+    (a.reputation?'<div class="as-sec"><b>🏷 Read</b><div>'+esc(a.reputation)+"</div></div>":"")+
+    (a.strengths&&a.strengths.length?'<div class="as-sec"><b>💪 Strengths</b>'+li(a.strengths)+"</div>":"")+
+    (a.weaknesses&&a.weaknesses.length?'<div class="as-sec"><b>🩹 Gaps to close</b>'+li(a.weaknesses)+"</div>":"")+
+    (a.risks&&a.risks.length?'<div class="as-sec"><b>⚠️ Safety / ethics</b>'+li(a.risks)+"</div>":"")+
+    (a.tips&&a.tips.length?'<div class="as-sec"><b>🎯 Next actions</b>'+li(a.tips)+"</div>":"")+"</div>";
+}
+function assessChip(a){if(!a)return"";const r=Math.max(0,Math.min(5,parseInt(a.rating)||0));return '<span class="as-chip">🩺 '+"★".repeat(r)+"☆".repeat(5-r)+"</span>";}
+
+/* ============ DEFINE ALL SECTIONS ============ */
+const STATUS_LEARN=["To do","Learning","Done"];
+const STATUS_LAB=["Planned","In progress","Owned","Stuck"];
+const STATUS_FIND=["Open","Confirmed","Reported","Patched"];
+const STATUS_CTF=["Planned","Playing","Done"];
+const STATUS_CERT=["Planned","Studying","Booked","Passed"];
+
+buildFactory({
+  key:"topics",view:"vTopics",title:"Topics",plural:"topics",noun:"topic",icon:"📚",accent:"var(--blue)",
+  sub:"Your learning roadmap — one card per concept. Track status, resources and your own notes; AI can fill any field.",
+  info:"A <b>topic</b> is anything you're learning — a vuln class (IDOR, SSRF), a protocol, a concept. AI fills the notes, resources and a mini practice plan.",
+  addLabel:"＋ New topic",emoji:"📚",statusField:"status",progressField:"progress",
+  name:r=>r.title,reqMsg:"Give the topic a title",
+  aiPlaceholder:"e.g. Learning SSRF from scratch — want the concept, where it happens, how to detect and exploit in a lab, and how to fix it",
+  aiPersona:"You are a cybersecurity study mentor.",assessKind:"topic",
+  chips:[{k:"category",ic:"🏷"},{k:"difficulty",ic:"📊"}],
+  highlight:[{k:"practicePlan",ic:"🧭"},{k:"notes",ic:"📝",warn:true}],
+  groups:[
+    {g:"Topic",ic:"📚",f:[["title","Topic / concept"],["category","Category (Web / Network / Linux / AD / Crypto…)"],["difficulty","Difficulty (easy/medium/hard)"],["status","Status",{select:STATUS_LEARN}],["progress","Progress % (0-100)"],["targetDate","Target date","date"]]},
+    {g:"Understanding",ic:"🧠",f:[["summary","In-your-own-words summary","long"],["howItWorks","How it works / where it occurs","long"],["detection","How to detect / test it","long"],["mitigation","How to fix / defend","long"]]},
+    {g:"Practice & study",ic:"🧪",f:[["resources","Best resources / links","long"],["practicePlan","Mini practice plan","long"],["notes","My notes / questions","long"]]}
+  ]
+});
+
+buildFactory({
+  key:"labs",view:"vLabs",title:"Labs & Machines",plural:"labs",noun:"lab",icon:"🧪",accent:"var(--neon)",
+  sub:"Boxes and labs you've done — HTB, TryHackMe, PortSwigger, VulnHub. Log the path, techniques and lessons. AI fills any field.",
+  info:"Practise only on <b>authorised</b> platforms & labs. Log each box: what you learned, tools used, and where you got stuck.",
+  addLabel:"＋ New lab",emoji:"🧪",statusField:"status",avatar:true,
+  name:r=>r.name,reqMsg:"Give the lab a name",
+  aiPlaceholder:"e.g. HTB box 'Blue' — Windows, EternalBlue (MS17-010), used nmap + metasploit, got SYSTEM. Learned SMB enumeration.",
+  aiPersona:"You are a penetration-testing lab mentor documenting an authorised practice machine.",assessKind:"lab",
+  chips:[{k:"platform",ic:"🖥"},{k:"os",ic:"💽"},{k:"difficulty",ic:"📊"}],
+  highlight:[{k:"lessons",ic:"💡"},{k:"stuckAt",ic:"🧩",warn:true}],
+  groups:[
+    {g:"Machine",ic:"🖥",f:[["name","Box / lab name"],["platform","Platform (HTB / THM / PortSwigger / VulnHub)"],["os","OS / type"],["difficulty","Difficulty"],["status","Status",{select:STATUS_LAB}],["date","Date attempted","date"]]},
+    {g:"Attack path",ic:"⚔",f:[["recon","Recon / enumeration","long"],["foothold","Initial foothold / exploit","long"],["privesc","Privilege escalation","long"],["toolsUsed","Tools used"]]},
+    {g:"Learning",ic:"💡",f:[["lessons","Key lessons","long"],["stuckAt","Where I got stuck","long"],["notes","Notes / commands to remember","long"]]}
+  ]
+});
+
+buildFactory({
+  key:"findings",view:"vFindings",title:"Findings",plural:"findings",noun:"finding",icon:"🐛",accent:"var(--red)",
+  sub:"Vulnerabilities you found or practised — in labs or authorised targets. Track severity, impact and remediation. AI fills any field.",
+  info:"Only log findings from <b>labs or authorised programs</b> you're allowed to test. Include impact and a fix — that's how you learn to write good reports.",
+  addLabel:"＋ New finding",emoji:"🐛",statusField:"status",
+  name:r=>r.title,reqMsg:"Give the finding a title",
+  aiPlaceholder:"e.g. IDOR on /api/orders/{id} in a PortSwigger lab — could read other users' orders by changing the id. High impact, fix with object-level auth.",
+  aiPersona:"You are a bug-bounty mentor documenting a vulnerability found in an authorised lab/target for learning.",assessKind:"finding",
+  chips:[{k:"vulnClass",ic:"🏷"},{k:"severity",ic:"🔥"},{k:"target",ic:"🎯"}],
+  highlight:[{k:"impact",ic:"💥"},{k:"remediation",ic:"🛡"}],
+  groups:[
+    {g:"Finding",ic:"🐛",f:[["title","Title"],["vulnClass","Vulnerability class (IDOR, XSS, SSRF…)"],["severity","Severity (info/low/med/high/crit)"],["status","Status",{select:STATUS_FIND}],["target","Target / lab (authorised)"],["date","Date","date"]]},
+    {g:"Technical detail",ic:"🔬",f:[["summary","Summary","long"],["steps","Steps to reproduce","long"],["payload","Payload / request"],["impact","Impact","long"]]},
+    {g:"Fix & learning",ic:"🛡",f:[["remediation","Remediation / fix","long"],["cvss","CVSS-ish rating / vector"],["notes","Notes / what I learned","long"]]}
+  ]
+});
+
+buildFactory({
+  key:"tools",view:"vTools",title:"Tools Arsenal",plural:"tools",noun:"tool",icon:"🛠",accent:"var(--amber)",
+  sub:"The tools you're learning — nmap, Burp, ffuf, gobuster, wireshark… cheatsheets, key flags and your own notes. AI fills any field.",
+  info:"Build a personal cheatsheet for each tool: what it's for, the flags you actually use, and gotchas.",
+  addLabel:"＋ New tool",emoji:"🛠",statusField:"level",avatar:true,
+  name:r=>r.name,reqMsg:"Give the tool a name",
+  aiPlaceholder:"e.g. ffuf — web fuzzer, learning it now. Want a cheatsheet: directory brute force, vhost fuzzing, and useful flags.",
+  aiPersona:"You are a mentor writing a practical cheatsheet for a security tool.",assessKind:"tool",
+  chips:[{k:"category",ic:"🏷"},{k:"level",ic:"📊"}],
+  highlight:[{k:"commonCmds",ic:"⌨"},{k:"tips",ic:"💡"}],
+  groups:[
+    {g:"Tool",ic:"🛠",f:[["name","Tool name"],["category","Category (recon / web / exploit / forensics…)"],["level","My level (learning / comfortable / fluent)"],["purpose","What it's for","long"]]},
+    {g:"Cheatsheet",ic:"⌨",f:[["install","Install / setup"],["commonCmds","Common commands / flags","long"],["examples","Example workflows","long"],["tips","Tips & gotchas","long"]]},
+    {g:"Reference",ic:"🔗",f:[["docs","Docs / links"],["notes","My notes","long"]]}
+  ]
+});
+
+buildFactory({
+  key:"ctf",view:"vCtf",title:"CTFs",plural:"CTFs",noun:"CTF",icon:"🏁",accent:"var(--violet)",
+  sub:"CTF events & challenges — track dates, categories, solves and takeaways. AI fills any field.",
+  info:"Log events you join and challenges you solve. Add the <b>end date</b> and it shows in Deadlines & Calendar.",
+  addLabel:"＋ New CTF",emoji:"🏁",statusField:"status",
+  name:r=>r.name,reqMsg:"Give the CTF a name",
+  aiPlaceholder:"e.g. picoCTF — beginner-friendly, categories: web, crypto, forensics. Want a prep plan and which category to start with.",
+  aiPersona:"You are a CTF coach for a beginner.",assessKind:"ctf",
+  chips:[{k:"platform",ic:"🌐"},{k:"categories",ic:"🏷"}],
+  highlight:[{k:"prepPlan",ic:"🧭"},{k:"takeaways",ic:"💡"}],
+  groups:[
+    {g:"Event",ic:"🏁",f:[["name","CTF name"],["platform","Platform / organiser"],["status","Status",{select:STATUS_CTF}],["startDate","Start date","date"],["endDate","End date (deadline)","date"],["categories","Categories"]]},
+    {g:"Play",ic:"🎯",f:[["prepPlan","Prep plan","long"],["solved","Challenges solved","long"],["stuck","Challenges I couldn't solve","long"],["takeaways","Takeaways / to study","long"]]}
+  ]
+});
+
+buildFactory({
+  key:"certs",view:"vCerts",title:"Certifications",plural:"certifications",noun:"certification",icon:"🎓",accent:"var(--cyan)",
+  sub:"Certs you're targeting — CompTIA, OSCP, CEH, eJPT… track study plan, exam date and readiness. AI assesses your readiness.",
+  info:"Add the <b>exam date</b> and it appears in Deadlines & Calendar. Use 🩺 AI assessment for a candid readiness read.",
+  addLabel:"＋ New certification",emoji:"🎓",statusField:"status",progressField:"progress",
+  name:r=>r.name,reqMsg:"Give the certification a name",
+  aiPlaceholder:"e.g. OSCP — targeting in 6 months. Currently comfortable with basic web & Linux, weak on Active Directory and buffer overflows. Want a study plan.",
+  aiPersona:"You are a certification study coach.",assessKind:"cert",
+  chips:[{k:"provider",ic:"🏛"},{k:"status",ic:"🔖"}],
+  highlight:[{k:"studyPlan",ic:"🧭"},{k:"weakAreas",ic:"🩹",warn:true}],
+  groups:[
+    {g:"Certification",ic:"🎓",f:[["name","Certification"],["provider","Provider (Offsec / CompTIA / EC-Council…)"],["status","Status",{select:STATUS_CERT}],["progress","Progress % (0-100)"],["examDate","Exam date","date"],["cost","Cost / budget"]]},
+    {g:"Study",ic:"📖",f:[["studyPlan","Study plan","long"],["resources","Resources / courses","long"],["weakAreas","Weak areas to focus","long"],["notes","Notes","long"]]}
+  ]
+});
+
+buildFactory({
+  key:"writeups",view:"vWriteups",title:"Writeups",plural:"writeups",noun:"writeup",icon:"📝",accent:"var(--pink)",
+  sub:"Your knowledge base — techniques, CVE notes, payloads and writeups you save. Paste a URL/text; AI fills the fields.",
+  info:"Save any technique, CVE, payload or writeup so it's searchable later. Paste the text in the AI box and let it fill the fields.",
+  addLabel:"＋ New writeup",emoji:"📝",
+  name:r=>r.title,reqMsg:"Give the writeup a title",
+  aiPlaceholder:"Paste a writeup URL or its text, or describe a technique — AI extracts the title, category, technique, payload and key takeaways.",
+  aiPersona:"You are a security knowledge-base assistant extracting a technique/CVE/writeup.",assessKind:"writeup",
+  chips:[{k:"category",ic:"🏷"},{k:"cve",ic:"🆔"}],
+  highlight:[{k:"technique",ic:"🔧"},{k:"takeaway",ic:"💡"}],
+  groups:[
+    {g:"Writeup",ic:"📝",f:[["title","Title"],["category","Category (technique / CVE / payload / report)"],["cve","CVE / reference"],["source","Source URL"]]},
+    {g:"Content",ic:"📄",f:[["summary","Summary","long"],["technique","Core technique / how it works","long"],["payload","Payload / PoC snippet","long"],["takeaway","Key takeaway for me","long"],["fullText","Full text (kept searchable)","long"]]}
+  ]
+});
+
+/* paint list sections once shells are ready */
+COLLECTIONS.filter(k=>FACTORIES[k]).forEach(k=>FACTORIES[k].paint());
+
+/* ============ HOME ============ */
+function stat(n,label,view){return `<div class="stat" onclick="go('${view}')"><div class="n">${n}</div><div class="l">${esc(label)} ›</div></div>`;}
+function renderHome(){
+  if(!$("homeStats"))return;
+  $("homeStats").innerHTML=[
+    stat(state.topics.length,"Topics","vTopics"),
+    stat(state.labs.length,"Labs done","vLabs"),
+    stat(state.findings.length,"Findings","vFindings"),
+    stat(state.ctf.length,"CTFs","vCtf")
+  ].join("");
+  const owned=state.labs.filter(l=>l.status==="Owned").length;
+  const done=state.topics.filter(t=>t.status==="Done").length;
+  $("homeTerm").innerHTML=`<span class="dim">$</span> whoami <span class="dim">→</span> ${esc((state.profile.name||"operator"))} <span class="dim">|</span> track=<b style="color:var(--neon)">${esc(state.profile.track)}</b> <span class="dim">|</span> level=${esc(state.profile.level)} <span class="dim">|</span> boxes_owned=${owned} <span class="dim">|</span> topics_done=${done} <span class="dim">|</span> tools=${state.tools.length}`;
+  $("homeCreate").innerHTML=[
+    ["topics","📚 New topic","Track a concept to learn.","var(--blue)"],
+    ["labs","🧪 New lab","Log a box or lab you did.","var(--neon)"],
+    ["findings","🐛 New finding","Document a vuln you found.","var(--red)"],
+    ["tools","🛠 New tool","Add a tool cheatsheet.","var(--amber)"],
+    ["ctf","🏁 New CTF","Track an event or solve.","var(--violet)"],
+    ["writeups","📝 New writeup","Save a technique or CVE.","var(--pink)"]
+  ].map(([k,t,d,c])=>`<a class="tile" style="--accent:${c}" onclick="FACTORIES['${k}'].open(null)"><div class="tk">${FACTORIES[k].title}</div><div class="tt">${t}</div><div class="td">${d}</div><span class="tgo">Create ›</span></a>`).join("");
+  // recent lists
+  const recent=(k,label,view)=>{const items=(state[k]||[]).slice(0,4);if(!items.length)return"";const cfg=FACTORIES[k];return `<div class="sec-head"><span class="ic" style="background:${cfg.accent}">•</span><div><h3>${label}</h3></div><button class="btn sm" style="margin-left:auto" onclick="go('${view}')">See all</button></div><div class="cards">${items.map(r=>`<div class="rec" style="--accent:${cfg.accent};cursor:pointer" onclick="FACTORIES['${k}'].open('${r.id}')"><div class="top"><div class="name">${esc(cfg.name(r)||"Untitled")}</div>${cfg.statusField&&r[cfg.statusField]?`<span class="st ${(r[cfg.statusField]||'').toLowerCase().replace(/[^a-z]/g,'')}">${esc(r[cfg.statusField])}</span>`:""}</div>${(r._tags||[]).length?`<div class="tagrow">${(r._tags||[]).slice(0,4).map(t=>`<span class="tg">${esc(t)}</span>`).join("")}</div>`:""}</div>`).join("")}</div>`;};
+  $("homeLists").innerHTML=recent("labs","Recent labs","vLabs")+recent("findings","Recent findings","vFindings")+recent("topics","Learning now","vTopics");
+}
+$("homeBackup").onclick=()=>$("exportData").click();
+$("homeRestore").onclick=()=>$("homeRestoreFile").click();
+$("homeRestoreFile").onchange=e=>doImport(e.target.files[0]);
+
+/* ============ DEADLINES / ALERTS ============ */
+function collectDeadlines(){
+  const out=[];
+  const push=(iso,title,tag,ref)=>{if(!iso)return;const d=daysFromToday(iso);if(d!=null&&d>=-3&&d<=60)out.push({d,iso,title,tag,ref});};
+  state.certs.forEach(c=>push(c.examDate,c.name+" — exam","Cert","certs:"+c.id));
+  state.ctf.forEach(c=>push(c.endDate,c.name+" — ends","CTF","ctf:"+c.id));
+  state.topics.forEach(t=>push(t.targetDate,t.title+" — target","Topic","topics:"+t.id));
+  state.reminders.forEach(r=>push(r.date,r.text,"Reminder",null));
+  out.sort((a,b)=>a.d-b.d);
+  return out;
+}
+function renderAlerts(){
+  const all=collectDeadlines();
+  const upcoming=all.filter(a=>a.d>=0).length;
+  const overdue=all.filter(a=>a.d<0).length;
+  if($("alertStats"))$("alertStats").innerHTML=[
+    stat(state.topics.filter(t=>t.status!=="Done").length,"Topics open","vTopics"),
+    stat(upcoming,"Upcoming","vAlerts"),
+    stat(state.certs.length,"Certs","vCerts"),
+    `<div class="stat alert" onclick="go('vCal')"><div class="n">${overdue}</div><div class="l">Overdue ›</div></div>`
+  ].join("");
+  const pill=$("alertPill");
+  if(!all.length){$("alertList").innerHTML=`<div class="empty">${seal(56)}<h3>Nothing due soon</h3><p>Add an exam date to a cert, an end date to a CTF, or a target date to a topic — it shows here, nearest first.</p></div>`;if(pill)pill.classList.add("hidden");return;}
+  if(pill){pill.textContent=all.filter(a=>a.d>=0&&a.d<=7).length||all.length;pill.classList.toggle("hidden",!all.length);}
+  $("alertList").innerHTML=all.map(a=>{const urgent=a.d<=3;const label=a.d<0?Math.abs(a.d):a.d===0?"•":a.d;const unit=a.d<0?"late":a.d===0?"today":a.d===1?"day":"days";return `<div class="alert ${urgent?'urgent':''}" ${a.ref?`onclick="gotoRef('${a.ref}')"`:""}><div class="when"><div class="d">${label}</div><div class="m">${unit}</div></div><div class="body"><div class="t">${esc(a.title)}</div><div class="mt">${fmtDate(a.iso)}</div></div><span class="tag">${esc(a.tag)}</span></div>`;}).join("");
+}
+$("remindBtn").onclick=()=>{
+  if(!("Notification"in window)){toast("This browser can't show reminders");return;}
+  Notification.requestPermission().then(p=>{if(p==="granted"){localStorage.setItem(NS+"remind","1");toast("Reminders on — alerts for items within 2 days");fireReminders();}else toast("Reminders blocked in browser settings");});
+};
+function fireReminders(){
+  if(localStorage.getItem(NS+"remind")!=="1"||Notification.permission!=="granted")return;
+  const soon=collectDeadlines().filter(a=>a.d>=0&&a.d<=2).map(a=>a.title+" · "+fmtDate(a.iso));
+  const key=NS+"remind.fired."+todayISO();
+  if(soon.length&&localStorage.getItem(key)!=="1"){new Notification("CyberGhani — coming up",{body:soon.join("\n")});localStorage.setItem(key,"1");}
+}
+
+/* ============ AI MENTOR ============ */
+const AI_PROMPTS=[
+  ["🧭 Roadmap","Give me a 90-day beginner roadmap for my track with weekly milestones and free practice platforms."],
+  ["🐛 Learn a vuln","Teach me one OWASP Top 10 vuln from scratch: concept, how to find it, a lab to practise, and how to fix it."],
+  ["🧪 Next box","Suggest 3 beginner boxes to practise next and what each will teach me."],
+  ["📝 Report writing","Show me how to write a clean vulnerability report with a template I can reuse."],
+  ["🛠 Tool of the week","Pick one tool I should master this week and give me a hands-on cheatsheet + mini exercise."],
+  ["🎓 Cert path","Based on my level, which certification should I aim for first and why?"]
+];
+function renderAiPrompts(){if(!$("aiPrompts"))return;$("aiPrompts").innerHTML=AI_PROMPTS.map(([t,p])=>`<a class="tile" style="--accent:var(--neon);cursor:pointer" onclick="setAiPrompt(${JSON.stringify(p).replace(/"/g,'&quot;')})"><div class="tt">${esc(t)}</div><div class="td">${esc(p.slice(0,70))}…</div></a>`).join("");}
+window.setAiPrompt=p=>{$("aiAsk").value=p;$("aiAsk").focus();window.scrollTo(0,0);};
+$("aiRun").onclick=async()=>{
+  if(!hasKey()){toast("Add an AI key (🔑)");return;}
+  const q=$("aiAsk").value.trim();if(!q){toast("Type your question");return;}
+  const btn=$("aiRun"),o=btn.textContent;btn.disabled=true;btn.textContent="Thinking…";
+  $("aiAnswer").innerHTML=`<div class="la-loading"><span class="la-spin"></span> The mentor is thinking…</div>`;
+  try{
+    let ctx="";
+    if($("aiUseData").checked){
+      const t=state.topics.slice(0,20).map(x=>`- topic: ${x.title} [${x.status||''}] ${x.category||''}`).join("\n");
+      const l=state.labs.slice(0,15).map(x=>`- lab: ${x.name} [${x.status||''}] ${x.platform||''} ${x.os||''}`).join("\n");
+      const f=state.findings.slice(0,15).map(x=>`- finding: ${x.title} (${x.vulnClass||''}, ${x.severity||''})`).join("\n");
+      ctx=`LEARNER PROFILE: track=${state.profile.track}, level=${state.profile.level}, goal=${state.profile.goal||'-'}\nSAVED TOPICS:\n${t}\nSAVED LABS:\n${l}\nSAVED FINDINGS:\n${f}\n\n`;
+    }
+    const prompt=`You are an experienced, ethical cybersecurity mentor teaching a self-taught student. Answer practically and hands-on, ALWAYS within legal, authorised, educational boundaries (labs, CTFs, own systems, authorised programs). Use short bold headings, bullets and code blocks where useful. Cover, where relevant: what to understand, where to practise legally, concrete steps/commands, a small exercise, and pitfalls. Be concrete and beginner-safe.\n\n${ctx}QUESTION:\n${q}`;
+    const txt=await aiCall(prompt,false);
+    $("aiAnswer").innerHTML=`<div class="ai-out">${mdLite(txt)}</div>`;
+  }catch(e){$("aiAnswer").innerHTML=`<div class="info-card">AI error: ${esc(e.message=="no-key"?"add your key (🔑 top-right)":e.message)}</div>`;}
+  btn.disabled=false;btn.textContent=o;
+};
+
+/* ============ BRAIN DUMP (bulk intake) ============ */
+(function(){
+  const sec=$("vIntake")||(function(){const s=document.createElement("section");s.className="view";s.id="vIntake";document.querySelector("main").appendChild(s);return s;})();
+  const TYPES=[
+    {k:"topics",ic:"📚",keys:["title","category","difficulty","status","summary","notes"],name:r=>r.title},
+    {k:"labs",ic:"🧪",keys:["name","platform","os","difficulty","status","lessons","notes"],name:r=>r.name},
+    {k:"findings",ic:"🐛",keys:["title","vulnClass","severity","status","target","summary","impact","remediation"],name:r=>r.title},
+    {k:"tools",ic:"🛠",keys:["name","category","level","purpose","commonCmds"],name:r=>r.name},
+    {k:"ctf",ic:"🏁",keys:["name","platform","status","startDate","endDate","categories"],name:r=>r.name},
+    {k:"certs",ic:"🎓",keys:["name","provider","status","examDate","weakAreas"],name:r=>r.name},
+    {k:"writeups",ic:"📝",keys:["title","category","cve","technique","takeaway"],name:r=>r.title}
+  ];
+  let found=null;
+  sec.innerHTML=`<div class="page-head"><div><h2>📥 Brain Dump — sort a pile at once</h2><div class="sub">Paste a messy heap of mixed notes — topics, boxes, vulns, tools, CTFs, certs, writeups together, any format. AI sorts it into proper records you add in one tap.</div></div></div>
+    <div class="panel">
+      <textarea id="intakeSrc" style="width:100%;min-height:160px" placeholder="Example: Learning SSRF and JWT attacks. Rooted HTB 'Blue' with EternalBlue. Found reflected XSS in a PortSwigger lab. Learning ffuf. picoCTF starts next month. Targeting eJPT — weak on pivoting…"></textarea>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+        <button class="btn primary" id="intakeRun" type="button">🤖 Analyse &amp; extract</button>
+        <button class="btn sm" id="intakeClear" type="button">Clear</button>
+      </div>
+      <div class="hint" style="margin-top:8px">Needs an AI key (🔑). Nothing is saved until you tap Add.</div>
+    </div>
+    <div id="intakeResults"></div>`;
+  function buildPrompt(src){
+    const spec=TYPES.map(t=>'"'+t.k+'": [ { '+t.keys.map(k=>'"'+k+'": ""').join(", ")+' } ]').join(",\n");
+    return "You are a cybersecurity study assistant. Read the messy notes and extract EVERY distinct record into structured JSON. There may be many of each type. Create a separate object per topic, lab/box, finding, tool, CTF, certification and writeup you can identify. Use \"\" for unknown fields and NEVER invent. Dates as YYYY-MM-DD where possible. Everything is for legal, authorised learning.\nReturn ONLY valid JSON with exactly these arrays (use [] when a type is absent):\n{\n"+spec+"\n}\nNOTES:\n"+src.slice(0,15000);
+  }
+  async function run(){
+    if(!hasKey()){toast("Add an AI key (🔑)");return;}
+    const src=($("intakeSrc").value||"").trim();if(src.length<10){toast("Paste some notes first");return;}
+    const b=$("intakeRun"),o=b.textContent;b.disabled=true;b.textContent="Analysing…";
+    $("intakeResults").innerHTML=`<div class="la-loading"><span class="la-spin"></span> Reading and sorting…</div>`;
+    try{
+      const j=parseJSON(await aiCall(buildPrompt(src),true))||{};
+      found={};let total=0;
+      TYPES.forEach(t=>{const a=Array.isArray(j[t.k])?j[t.k]:[];found[t.k]=a.filter(x=>x&&(t.name(x)||"").toString().trim()).map((x,i)=>Object.assign({},x,{_sel:true,_i:i}));total+=found[t.k].length;});
+      renderResults(total);
+    }catch(e){$("intakeResults").innerHTML=`<div class="info-card">AI error: ${esc(e.message)}</div>`;}
+    b.disabled=false;b.textContent=o;
+  }
+  function renderResults(total){
+    const box=$("intakeResults");
+    if(!total){box.innerHTML='<div class="empty"><h3>Nothing found</h3><p>Add more detail and try again.</p></div>';return;}
+    let html='<div class="panel"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px"><b>Found '+total+' record'+(total>1?"s":"")+" — untick anything you don't want, then add.</b><button class=\"btn primary\" id=\"intakeAdd\">＋ Add all selected</button></div></div>";
+    TYPES.forEach(t=>{const rows=found[t.k];if(!rows.length)return;const cfg=FACTORIES[t.k];
+      html+='<div class="panel"><h3>'+t.ic+" "+cfg.title+' <span style="color:var(--ink-faint);font-weight:400">('+rows.length+")</span></h3>";
+      rows.forEach(r=>{const nm=esc((t.name(r)||"(unnamed)").toString());const sub=t.keys.slice(1,5).map(k=>r[k]?esc(String(r[k])):"").filter(Boolean).join(" · ");
+        html+='<label style="display:flex;gap:10px;align-items:flex-start;padding:8px 4px;border-bottom:1px solid var(--line);cursor:pointer;font-size:13px"><input type="checkbox" data-t="'+t.k+'" data-i="'+r._i+'" '+(r._sel?"checked":"")+' style="margin-top:3px;flex:none"><span><b>'+nm+"</b>"+(sub?'<span style="color:var(--ink-soft);font-size:12px"> '+sub+"</span>":"")+"</span></label>";});
+      html+="</div>";});
+    box.innerHTML=html;
+    box.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.onchange=()=>{const rec=found[cb.dataset.t].find(x=>x._i===+cb.dataset.i);if(rec)rec._sel=cb.checked;});
+    $("intakeAdd").onclick=addAll;
+  }
+  function addAll(){
+    const summary=[];
+    TYPES.forEach(t=>{const sel=found[t.k].filter(r=>r._sel);if(!sel.length)return;const arr=state[t.k]=state[t.k]||[];const cfg=FACTORIES[t.k];
+      sel.forEach(r=>{const obj={id:uid(t.k[0]),_tags:[]};t.keys.forEach(k=>{if(r[k]!=null&&String(r[k]).trim()!=="")obj[k]=String(r[k]).trim();});arr.unshift(obj);});
+      saveCol(t.k);summary.push(sel.length+" "+cfg.title.toLowerCase());});
+    renderAll();found=null;$("intakeResults").innerHTML="";$("intakeSrc").value="";
+    toast(summary.length?("Added "+summary.join(", ")):"Nothing selected");
+  }
+  $("intakeRun").onclick=run;
+  $("intakeClear").onclick=()=>{$("intakeSrc").value="";$("intakeResults").innerHTML="";found=null;};
+})();
+
+/* ============ VULN ANALYZER ============ */
+(function(){
+  const sec=$("vAnalyzer")||(function(){const s=document.createElement("section");s.className="view";s.id="vAnalyzer";document.querySelector("main").appendChild(s);return s;})();
+  sec.innerHTML=`<div class="page-head"><div><h2>🎯 Vuln Analyzer</h2><div class="sub">Paste a vulnerability, finding or lab writeup — AI scores it: severity, exploitability, impact, root cause, remediation and a learning plan. Save it straight into Findings.</div></div></div>
+    <div class="info-card">For <b>learning</b>. Only analyse things from labs, CTFs, your own systems or programs you're authorised to test. This does not provide exploit help for unauthorised targets.</div>
+    <div class="panel">
+      <div class="field" style="margin:0"><label>Vulnerability / finding text</label><textarea id="anSrc" style="min-height:130px" placeholder="e.g. On a PortSwigger lab, /api/orders/{id} returns any user's order when I change the id — no ownership check. Session cookie not required beyond login. What's the severity, root cause and fix?"></textarea></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+        <button class="btn primary" id="anRun" type="button">🔬 Analyse</button>
+        <button class="btn sm" id="anSave" type="button">＋ Save as finding</button>
+        <button class="btn sm" id="anClear" type="button">Clear</button>
+      </div>
+      <div class="hint" style="margin-top:8px">Needs an AI key (🔑).</div>
+    </div>
+    <div id="anOut"></div>`;
+  let last=null;
+  const clamp=p=>Math.max(0,Math.min(100,parseInt(p)||0));
+  const col=p=>p>=70?"linear-gradient(90deg,var(--red),#ff8a94)":p>=40?"linear-gradient(90deg,var(--amber),#ffd27a)":"linear-gradient(90deg,var(--neon),var(--cyan))";
+  const sevColor=s=>{s=String(s||"").toLowerCase();return /crit/.test(s)?"linear-gradient(110deg,#7f1d1d,#c6303f)":/high/.test(s)?"linear-gradient(110deg,#9a5b00,#F5B347)":/med/.test(s)?"linear-gradient(110deg,#0f5c53,#0E86A8)":"linear-gradient(110deg,#0A7A62,#22D3A8)";};
+  const cls=s=>{s=String(s||"").toLowerCase();if(/(present|strong|yes|high|confirmed|exploitable|clear)/.test(s))return"li-bad";if(/(missing|no|low|none|hard)/.test(s))return"li-good";return"li-warn";};
+  function bar(l,p){p=clamp(p);return `<div class="an-b"><span class="l">${esc(l)}</span><div class="t"><i style="width:${p}%;background:${col(p)}"></i></div><span class="v">${p}%</span></div>`;}
+  function render(a){
+    last=a;
+    const sev=a.severity||"Info";const sc=clamp(a.severityScore!=null?a.severityScore:(/(crit)/i.test(sev)?92:/high/i.test(sev)?75:/med/i.test(sev)?50:/low/i.test(sev)?25:10));
+    const b=a.bars||{};
+    const steps=(a.learningPlan||[]).map((p,i)=>`<div class="step"><span class="num">${i+1}</span><span>${esc(typeof p==="string"?p:(p.task||""))}</span></div>`).join("");
+    const impact=(a.impacts||[]).map(x=>`<div class="li-item ${cls(x.status||'present')}"><span class="li-dot"></span><span><span class="li-name">${esc(x.item||x.name||'')}</span>${x.note?` — ${esc(x.note)}`:""}</span></div>`).join("");
+    const weak=(a.mitigations||[]).map(w=>`<div class="weak-card sev-med"><div class="wi">${esc(typeof w==="string"?w:(w.fix||w.item||""))}</div>${(w&&w.why)?`<div class="wf">${esc(w.why)}</div>`:""}</div>`).join("");
+    $("anOut").innerHTML=`
+      <div class="an-card">
+        <div class="an-verdict" style="background:${sevColor(sev)}"><div class="vs">${sc}</div><div><div class="vt">${esc(sev)} · ${esc(a.vulnClass||"Finding")}</div><div class="vn">${esc(a.summary||"")}</div></div></div>
+        <div class="an-bars">
+          ${bar("Severity",sc)}
+          ${bar("Exploitability",b.exploitability)}
+          ${bar("Impact",b.impact)}
+          ${bar("Ease to fix",b.fixEase)}
+        </div>
+        ${a.cvss?`<div class="hint" style="display:block;margin-top:10px">CVSS-ish: <b class="mono">${esc(a.cvss)}</b></div>`:""}
+      </div>
+      ${a.rootCause?`<div class="an-card"><h4>Root cause</h4><div style="font-size:13px;line-height:1.55">${esc(a.rootCause)}</div></div>`:""}
+      ${impact?`<div class="an-card"><h4>Impact factors</h4>${impact}</div>`:""}
+      ${weak?`<div class="an-card"><h4>How to fix / defend</h4>${weak}</div>`:""}
+      ${steps?`<div class="an-card"><h4>Your learning plan</h4>${steps}</div>`:""}
+      <div class="hint" style="display:block;margin-top:4px">AI assessment for learning — verify severity against real CVSS calculators and vendor guidance.</div>`;
+  }
+  async function run(){
+    if(!hasKey()){toast("Add an AI key (🔑)");return;}
+    const src=($("anSrc").value||"").trim();if(src.length<15){toast("Paste the finding first");return;}
+    const b=$("anRun"),o=b.textContent;b.disabled=true;b.textContent="Analysing…";
+    $("anOut").innerHTML=`<div class="la-loading"><span class="la-spin"></span> Analysing the finding…</div>`;
+    const prompt=`You are a senior application-security mentor analysing a vulnerability a STUDENT found in an authorised lab/target, for LEARNING only. Do NOT provide operational exploit code for unauthorised systems; explain concepts, impact and defence. Return ONLY valid JSON, "" / [] when unknown, NEVER invent:
+{
+ "vulnClass":"e.g. IDOR / XSS / SSRF",
+ "severity":"Info|Low|Medium|High|Critical",
+ "severityScore":<0-100>,
+ "cvss":"approx CVSS 3.1 vector or score (label as approximate)",
+ "summary":"one sentence",
+ "bars":{"exploitability":<0-100>,"impact":<0-100>,"fixEase":<0-100>},
+ "rootCause":"why it exists",
+ "impacts":[{"item":"Confidentiality/Integrity/Availability/Auth bypass/etc","status":"High|Medium|Low|None","note":""}],
+ "mitigations":[{"fix":"concrete fix","why":""}],
+ "learningPlan":["what to study/practise to master this class safely"]
+}
+FINDING:
+${src.slice(0,12000)}`;
+    try{render(parseJSON(await aiCall(prompt,true)));toast("Analysis ready");}
+    catch(e){$("anOut").innerHTML=`<div class="info-card">AI error: ${esc(e.message)}</div>`;}
+    b.disabled=false;b.textContent=o;
+  }
+  $("anRun").onclick=run;
+  $("anClear").onclick=()=>{$("anSrc").value="";$("anOut").innerHTML="";last=null;};
+  $("anSave").onclick=()=>{
+    go("vFindings");FACTORIES.findings.open(null);
+    setTimeout(()=>{
+      const set=(k,v)=>{const el=document.querySelector('#vFindingsForm [data-k="'+k+'"]');if(el&&v){el.value=v;el.dispatchEvent(new Event('input'));}};
+      const src=($("anSrc").value||"").trim();
+      set("summary",src.slice(0,400));
+      if(last){set("vulnClass",last.vulnClass);set("severity",last.severity);set("impact",(last.impacts||[]).map(x=>x.item+(x.note?": "+x.note:"")).join("; "));set("remediation",(last.mitigations||[]).map(m=>typeof m==="string"?m:m.fix).join("; "));set("cvss",last.cvss);}
+      const ai=$("vFindingsSrc");if(ai)ai.value=src;
+      toast("Pre-filled a finding — add a title & save");
+    },160);
+  };
+})();
+
+/* ============ SKILL TRACKER ============ */
+const SKILL_LIST=["Linux CLI","Networking / TCP-IP","Web app security","Enumeration / recon","Scripting (Python/Bash)","Active Directory","Privilege escalation","Cryptography basics","Burp Suite","Report writing"];
+function renderSkills(){
+  if(!$("skillPanel"))return;
+  const s=state.skills||{};
+  $("skillPanel").innerHTML=`<h3>Rate yourself (0–5)</h3><div class="desc">Honest self-rating. Update as you grow — it feeds the AI's advice.</div>`+
+    SKILL_LIST.map(k=>{const v=s[k]!=null?s[k]:0;return `<div style="display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--line-soft)"><div style="flex:1;font-size:13.5px;font-weight:600">${esc(k)}</div><input type="range" min="0" max="5" step="1" value="${v}" data-skill="${esc(k)}" style="flex:none;width:150px;accent-color:var(--neon)"><div class="mono" style="width:52px;text-align:right;color:var(--neon)" id="sv_${k.replace(/[^a-z]/gi,'')}">${"●".repeat(v)}${"○".repeat(5-v)}</div></div>`;}).join("")+
+    `<div style="margin-top:14px"><button class="btn primary" id="skillSave" type="button">Save ratings</button></div>`;
+  $("skillPanel").querySelectorAll("input[data-skill]").forEach(inp=>inp.oninput=()=>{const k=inp.dataset.skill;const dot=$("sv_"+k.replace(/[^a-z]/gi,''));if(dot)dot.textContent="●".repeat(+inp.value)+"○".repeat(5-+inp.value);});
+  $("skillSave").onclick=()=>{const o={};$("skillPanel").querySelectorAll("input[data-skill]").forEach(i=>o[i.dataset.skill]=+i.value);state.skills=o;DB.set("skills",o);toast("Ratings saved");};
+}
+$("skillAi").onclick=async function(){
+  if(!hasKey()){toast("Add an AI key (🔑)");return;}
+  const s=state.skills||{};if(!Object.keys(s).length){toast("Rate some skills first");return;}
+  const o=this.textContent;this.disabled=true;this.textContent="Thinking…";
+  $("skillAdvice").innerHTML=`<div class="la-loading"><span class="la-spin"></span> Building your focus plan…</div>`;
+  try{
+    const prompt=`You are a cybersecurity mentor. A ${state.profile.level} learner on the ${state.profile.track} track rated their skills 0-5:\n${JSON.stringify(s)}\nGoal: ${state.profile.goal||"grow"}. Give a short, motivating focus plan: the 2-3 weakest areas to prioritise, a concrete weekly action for each (with a free platform/lab), and one strength to leverage. Use bold headings and bullets.`;
+    const txt=await aiCall(prompt,false);
+    $("skillAdvice").innerHTML=`<div class="ai-out">${mdLite(txt)}</div>`;
+  }catch(e){$("skillAdvice").innerHTML=`<div class="info-card">AI error: ${esc(e.message)}</div>`;}
+  this.disabled=false;this.textContent=o;
+};
+
+/* ============ SEARCH ============ */
+function hilite(text,q){text=String(text==null?"":text);if(!q)return esc(text);const ql=q.toLowerCase(),tl=text.toLowerCase();let out="",i=0,k;while((k=tl.indexOf(ql,i))>=0){out+=esc(text.slice(i,k))+"<mark>"+esc(text.slice(k,k+q.length))+"</mark>";i=k+q.length;}return out+esc(text.slice(i));}
+function snippet(text,q){text=String(text==null?"":text);const i=text.toLowerCase().indexOf(q.toLowerCase());const s=Math.max(0,i-30);const part=i<0?text.slice(0,120):text.slice(s,s+150);return (s>0?"…":"")+hilite(part,q)+(text.length>s+150?"…":"");}
+$("localQ").addEventListener("input",e=>{
+  const q=e.target.value.trim();const box=$("localResults");
+  if(!q){box.innerHTML="";return;}
+  const ql=q.toLowerCase();const hits=[];
+  Object.values(FACTORIES).forEach(cfg=>{
+    (state[cfg.key]||[]).forEach(c=>{
+      const fields=[];
+      Object.entries(c).forEach(([k,v])=>{if(k==="id"||k==="_photo"||k==="_assess")return;if(typeof v==="string"&&v.toLowerCase().includes(ql))fields.push({f:k,v});else if(Array.isArray(v))v.forEach(it=>{if(typeof it==="string"&&it.toLowerCase().includes(ql))fields.push({f:k,v:it});});});
+      if(fields.length)hits.push({key:cfg.key,label:cfg.title.replace(/s$/,""),title:cfg.name(c)||"Untitled",id:c.id,fields});
+    });
+  });
+  if(!hits.length){box.innerHTML=`<div class="empty" style="padding:24px"><p>No matches for “${esc(q)}”.</p></div>`;return;}
+  box.innerHTML=hits.map(h=>{const first=h.fields[0];return `<div class="res-item" onclick="gotoRef('${h.key}:${h.id}')"><div class="rt">${hilite(h.title,q)}<span class="rk">${esc(h.label)}</span></div><div class="rm">${snippet(first.v,q)}</div></div>`;}).join("");
+});
+$("webGo").onclick=()=>{const t=$("webTarget").value,q=$("webQ").value.trim();if(!q){toast("Type what to search");return;}const query=(t?t+" ":"")+q;window.open("https://www.google.com/search?q="+encodeURIComponent(query),"_blank","noopener");};
+$("webQ").addEventListener("keydown",e=>{if(e.key==="Enter")$("webGo").click();});
+
+/* ============ CALENDAR ============ */
+$("calPrev").onclick=()=>{state.calMonth.setMonth(state.calMonth.getMonth()-1);renderCalendar();};
+$("calNext").onclick=()=>{state.calMonth.setMonth(state.calMonth.getMonth()+1);renderCalendar();};
+function renderCalendar(){
+  const y=state.calMonth.getFullYear(),m=state.calMonth.getMonth();
+  $("calLabel").textContent=new Date(y,m,1).toLocaleDateString('en-GB',{month:'long',year:'numeric'});
+  const first=new Date(y,m,1).getDay(),dim=new Date(y,m+1,0).getDate(),events={};
+  const add=(iso,t,kind)=>{if(!iso)return;(events[iso]=events[iso]||[]).push({t,kind});};
+  state.certs.forEach(c=>add(c.examDate,c.name+" exam","ev"));
+  state.ctf.forEach(c=>{add(c.startDate,c.name+" start","ev");add(c.endDate,c.name+" ends","ev");});
+  state.topics.forEach(t=>add(t.targetDate,t.title,"ev"));
+  state.reminders.forEach(r=>add(r.date,r.text,"rem"));
+  let html=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d=>`<div class="cal-dow">${d}</div>`).join("");
+  for(let i=0;i<first;i++)html+=`<div class="cal-day out"></div>`;
+  for(let day=1;day<=dim;day++){const iso=`${y}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;const evs=(events[iso]||[]).map(e=>`<div class="cal-ev ${e.kind}" title="${esc(e.t)}">${e.kind==='rem'?'🔔 ':''}${esc(e.t)}</div>`).join("");html+=`<div class="cal-day ${iso===todayISO()?'today':''}" onclick="addReminder('${iso}')"><div class="dn">${day}</div>${evs}</div>`;}
+  $("calGrid").innerHTML=html;
+}
+window.addReminder=iso=>{const txt=prompt("Add a reminder for "+fmtDate(iso)+":");if(!txt)return;state.reminders.push({id:uid("r"),date:iso,text:txt.trim()});saveCol("reminders");renderCalendar();renderAlerts();toast("Reminder added");};
+
+/* ============ NEWS ============ */
+let newsLoaded=false;
+async function fetchRSS(query){
+  const url="https://news.google.com/rss/search?q="+encodeURIComponent(query+" when:14d")+"&hl=en-US&gl=US&ceid=US:en";
+  try{const r=await fetch("https://api.allorigins.win/raw?url="+encodeURIComponent(url));const xml=await r.text();const doc=new DOMParser().parseFromString(xml,"text/xml");const items=[...doc.querySelectorAll("item")].map(it=>({title:it.querySelector("title")?.textContent||"",link:it.querySelector("link")?.textContent||"",date:it.querySelector("pubDate")?.textContent||"",desc:(it.querySelector("description")?.textContent||"").replace(/<[^>]+>/g," ")}));if(items.length)return items;}catch(e){}
+  try{const r=await fetch("https://api.rss2json.com/v1/api.json?count=10&rss_url="+encodeURIComponent(url));const d=await r.json();if(d.items)return d.items.map(it=>({title:it.title,link:it.link,date:it.pubDate,desc:(it.description||"").replace(/<[^>]+>/g," ")}));}catch(e){}
+  return [];
+}
+function newsHTML(it){const src=(it.title.split(" - ").pop())||"";const title=it.title.replace(/ - [^-]*$/,"");const date=it.date?new Date(it.date).toLocaleDateString('en-GB',{day:'numeric',month:'short'}):"";return `<a class="news-item" href="${it.link}" target="_blank" rel="noopener"><div class="nt">${esc(title)}</div><div class="nm">${esc(src)} · ${esc(date)}</div><div class="nd">${esc((it.desc||"").slice(0,150))}…</div></a>`;}
+async function loadNews(force){
+  if(newsLoaded&&!force)return;newsLoaded=true;
+  const box=$("newsList");box.innerHTML=`<div class="hint" style="display:block">Loading headlines…</div>`;
+  const items=await fetchRSS("cybersecurity (vulnerability OR breach OR exploit OR CVE OR hacking)");
+  box.innerHTML=items.length?items.slice(0,9).map(newsHTML).join(""):`<div class="hint" style="display:block">Live headlines couldn't load right now — open a trusted source below.</div>`;
+}
+$("newsRefresh").onclick=()=>loadNews(true);
+
+/* ============ LEARN / MEDIA ============ */
+const LEARN=[
+  {g:"Foundations",a:"var(--neon)",items:[
+    {t:"TryHackMe — Pre Security path",d:"Networking, Linux, web basics",u:"https://tryhackme.com/path/outline/presecurity"},
+    {t:"Professor Messer — Network+/Security+",d:"Free full courses",u:"https://www.youtube.com/@professormesser"},
+    {t:"OverTheWire — Bandit",d:"Learn Linux by playing",u:"https://overthewire.org/wargames/bandit/"},
+    {t:"Cybrary — free intro courses",d:"Structured beginner tracks",u:"https://www.cybrary.it/"}
+  ]},
+  {g:"Web security",a:"var(--blue)",items:[
+    {t:"PortSwigger Web Security Academy",d:"Best free web hacking labs",u:"https://portswigger.net/web-security"},
+    {t:"OWASP Top 10",d:"The core vuln classes",u:"https://owasp.org/www-project-top-ten/"},
+    {t:"HackTricks",d:"Techniques encyclopedia",u:"https://book.hacktricks.xyz/"},
+    {t:"OWASP Juice Shop",d:"Deliberately vulnerable app",u:"https://owasp.org/www-project-juice-shop/"}
+  ]},
+  {g:"Practice platforms",a:"var(--violet)",items:[
+    {t:"TryHackMe",d:"Guided beginner rooms",u:"https://tryhackme.com/"},
+    {t:"Hack The Box",d:"Boxes & Academy",u:"https://www.hackthebox.com/"},
+    {t:"picoCTF",d:"Beginner CTF & practice",u:"https://picoctf.org/"},
+    {t:"VulnHub",d:"Downloadable vulnerable VMs",u:"https://www.vulnhub.com/"}
+  ]},
+  {g:"Bug bounty & reporting",a:"var(--amber)",items:[
+    {t:"HackerOne Hacktivity",d:"Real disclosed reports",u:"https://hackerone.com/hacktivity"},
+    {t:"Bugcrowd University",d:"Free bug hunting lessons",u:"https://www.bugcrowd.com/hackers/bugcrowd-university/"},
+    {t:"Nahamsec — YouTube",d:"Bug bounty tutorials",u:"https://www.youtube.com/@NahamSec"},
+    {t:"CVSS calculator",d:"Score your findings properly",u:"https://www.first.org/cvss/calculator/3.1"}
+  ]}
+];
+function renderLearn(){$("learnWrap").innerHTML=LEARN.map(sec=>`<div class="sec-head"><span class="ic" style="background:${sec.a}">🧠</span><div><h3>${esc(sec.g)}</h3></div></div><div class="tiles">${sec.items.map(i=>`<a class="tile" style="--accent:${sec.a}" href="${i.u}" target="_blank" rel="noopener"><div class="tk">Learn</div><div class="tt">${esc(i.t)}</div><div class="td">${esc(i.d)}</div><span class="tgo">Open ›</span></a>`).join("")}</div>`).join("");}
+const MEDIA=[
+  {g:"Free labs & CTFs",a:"var(--neon)",items:[
+    {t:"PortSwigger labs",d:"Hundreds of free web labs",u:"https://portswigger.net/web-security/all-labs",free:1},
+    {t:"picoGym",d:"Always-on CTF challenges",u:"https://play.picoctf.org/practice",free:1},
+    {t:"OverTheWire wargames",d:"All free, browser/SSH",u:"https://overthewire.org/wargames/",free:1}
+  ]},
+  {g:"Free courses & videos",a:"var(--blue)",items:[
+    {t:"John Hammond — YouTube",d:"CTF & malware walkthroughs",u:"https://www.youtube.com/@_JohnHammond",free:1},
+    {t:"LiveOverflow — YouTube",d:"Deep technical explainers",u:"https://www.youtube.com/@LiveOverflow",free:1},
+    {t:"IppSec — YouTube",d:"HTB box walkthroughs",u:"https://www.youtube.com/@ippsec",free:1}
+  ]},
+  {g:"Read free",a:"var(--amber)",items:[
+    {t:"OWASP Testing Guide",d:"Free web testing methodology",u:"https://owasp.org/www-project-web-security-testing-guide/",free:1},
+    {t:"PayloadsAllTheThings",d:"Payloads & bypasses (GitHub)",u:"https://github.com/swisskyrepo/PayloadsAllTheThings",free:1},
+    {t:"GTFOBins",d:"Unix privesc reference",u:"https://gtfobins.github.io/",free:1}
+  ]}
+];
+function renderMedia(){$("mediaWrap").innerHTML=MEDIA.map(sec=>`<div class="sec-head"><span class="ic" style="background:${sec.a}">🎬</span><div><h3>${esc(sec.g)}</h3></div></div><div class="tiles">${sec.items.map(i=>`<a class="tile" style="--accent:${sec.a}" href="${i.u}" target="_blank" rel="noopener">${i.free?'<span class="free">Free</span>':''}<div class="tk">${esc(sec.g.split(" ")[0])}</div><div class="tt">${esc(i.t)}</div><div class="td">${esc(i.d)}</div><span class="tgo">Open ›</span></a>`).join("")}</div>`).join("");}
+
+/* ============ HELP ============ */
+const HELP=[
+  ["Getting started","Set your handle, track and level. Everything is stored in this browser. Add a free AI key (🔑) to unlock the assistant. Back up weekly from Home."],
+  ["AI everywhere","Add one AI key and it powers: the AI Mentor, per-field ⚡AI (fill just one box), AI quick-fill (fill a whole record), Brain Dump (bulk sort), the Vuln Analyzer, and 🩺 AI assessment on every record. If your active provider fails, the app auto-tries the next you've configured."],
+  ["Topics","Your learning roadmap — one card per concept (a vuln class, protocol, tool concept). Track status & progress; AI writes the summary, detection, mitigation and a mini practice plan."],
+  ["Labs & Machines","Log boxes you've done (HTB, THM, PortSwigger, VulnHub). Record the attack path, tools and lessons. 🩺 assessment tells you what to revisit and what to try next. Practise only on authorised platforms."],
+  ["Findings","Vulnerabilities you found or practised in labs / authorised targets. Track severity, steps, impact and remediation — great practice for report writing."],
+  ["Vuln Analyzer","Paste a finding and get a severity score, CVSS-ish rating, root cause, impact, fixes and a learning plan. Save it straight into Findings."],
+  ["Tools Arsenal","Build a personal cheatsheet per tool — purpose, key flags, example workflows and gotchas."],
+  ["CTFs","Track events and solves. Add an end date and it appears in Deadlines & Calendar."],
+  ["Certifications","Target certs, plan study, and use 🩺 assessment for a candid readiness read. Exam dates show in Deadlines."],
+  ["Writeups","Your knowledge base — techniques, CVEs, payloads. Paste a URL/text and AI fills the fields; everything stays searchable."],
+  ["Deadlines & Calendar","Cert exams, CTF end dates and topic targets gather here nearest-first, and on the calendar. Enable reminders for a nudge within 2 days."],
+  ["Skill tracker","Self-rate core skills; AI turns the ratings into a focus plan with weekly actions."],
+  ["Backup & restore","Home → Download all data (.json) is your full backup. Restore loads it on any device. Clearing the browser clears your data, so back up weekly."],
+  ["Ethics","Only test systems you own or are explicitly authorised to test (labs, CTFs, bug-bounty programs in scope). This app is for learning and defence."]
+];
+function renderHelp(){$("helpWrap").innerHTML=`<div class="info-card">Two ways to learn the app — skim the sections below. Every record type has AI quick-fill, per-field ⚡AI and a 🩺 assessment.</div>`+HELP.map(h=>`<details class="help" style="margin-bottom:8px"><summary>${esc(h[0])}</summary><div style="margin-top:8px;line-height:1.6">${esc(h[1])}</div></details>`).join("");}
+
+/* ============ SETTINGS + AI PANEL ============ */
+function renderSettings(){
+  const p=state.profile||{};
+  $("setName").textContent=p.name||"—";$("setTrack").textContent=p.track||"—";$("setLevel").textContent=p.level||"—";$("setGoal").textContent=p.goal||"—";
+  $("aiKey").value=(state.aikey&&state.aikey!=="MULTI")?state.aikey:"";
+}
+$("aiSave").onclick=()=>{const k=$("aiKey").value.trim();const c=aiCfg();c.providers.gemini.key=k;aiSaveCfg(c);buildAiPanel();toast(k?"Gemini key saved":"Key cleared");};
+$("aiClear").onclick=()=>{$("aiKey").value="";const c=aiCfg();c.providers.gemini.key="";aiSaveCfg(c);buildAiPanel();toast("Key removed");};
+$("editProfile").onclick=()=>{$("appShell").classList.add("hidden");$("gateScreen").classList.remove("hidden");openGate();};
+$("exportData").onclick=()=>{const dump={app:"CyberGhani",exportedAt:new Date().toISOString(),profile:state.profile,skills:state.skills};COLLECTIONS.forEach(k=>dump[k]=state[k]);const blob=new Blob([JSON.stringify(dump,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="cyberghani-backup-"+todayISO()+".json";a.click();toast("Backup downloaded");};
+$("importBtn").onclick=()=>$("importFile").click();
+$("importFile").onchange=e=>doImport(e.target.files[0]);
+function doImport(f){if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(d.profile){state.profile=d.profile;DB.set("profile",d.profile);}if(d.skills){state.skills=d.skills;DB.set("skills",d.skills);}COLLECTIONS.forEach(k=>{if(Array.isArray(d[k])){state[k]=d[k];saveCol(k);}});enterApp();toast("Backup restored");}catch(err){toast("That file could not be read");}};r.readAsText(f);}
+$("wipeData").onclick=()=>{if(prompt('Type WIPE to erase everything on this device:')!=="WIPE")return;Object.keys(localStorage).filter(k=>k.startsWith(NS)).forEach(k=>localStorage.removeItem(k));location.reload();};
+
+function buildAiPanel(){
+  const anchor=$("aiKey");if(!anchor)return;
+  const host=anchor.closest(".panel");
+  let wrap=$("aiProviderPanel");
+  if(!wrap){wrap=document.createElement("div");wrap.className="panel";wrap.id="aiProviderPanel";host.after(wrap);}
+  const CFG=aiCfg();
+  wrap.innerHTML=`<h3>🔀 Providers &amp; fallback</h3><div class="desc">Add a <b>Gemini</b> or <b>OpenRouter</b> key — those work with no proxy once the app runs on a real site (GitHub Pages) or in a normal browser. <b>Grok / OpenAI / DeepSeek</b> need the CORS proxy below. If the active one fails, the app auto-tries the next keyed provider. Keys stay on this device.<br><b>Just testing inside the Claude app preview?</b> External APIs are blocked there — set <b>Active = Claude</b> (needs no key) to try the AI now; switch back to Gemini before you deploy.</div>
+    <div style="margin-bottom:10px"><label style="font-size:11px;font-weight:700;color:var(--ink-faint)">Active provider</label><br><select id="aipActive" style="padding:8px 10px;border:1px solid var(--line);border-radius:7px;background:var(--paper);color:var(--ink)">${AI_ORDER.map(p=>`<option value="${p}" ${CFG.active===p?'selected':''}>${AI_DEFAULTS[p].label}</option>`).join("")}</select></div>
+    ${AI_ORDER.map(p=>`<div class="aip-row ${CFG.active===p?'active':''}"><div class="aip-h"><span class="nm">${AI_DEFAULTS[p].label}</span>${CFG.active===p?'<span class="badge">Active</span>':''}</div>${p==="claude"?`<div class="hint" style="display:block">No key — works only while running inside the Claude app preview. Select it as Active above to use it.<div style="display:flex;gap:8px;margin-top:6px"><input placeholder="Model" value="${esc(CFG.providers[p].model)}" data-m="${p}" style="flex:1;padding:8px 10px;border:1px solid var(--line);border-radius:7px;background:var(--paper);color:var(--ink);font-size:13px"><button class="btn sm" type="button" data-test="${p}">Test</button></div></div>`:`<div class="aip-g"><input class="k" type="password" placeholder="${AI_DEFAULTS[p].label} API key" value="${esc(CFG.providers[p].key)}" data-k="${p}"><input placeholder="Model" value="${esc(CFG.providers[p].model)}" data-m="${p}"><button class="btn sm" type="button" data-test="${p}">Test</button></div>`}</div>`).join("")}
+    <div class="field" style="margin-top:6px"><label>CORS proxy for OpenAI / DeepSeek / Grok <span style="font-weight:400;color:var(--ink-faint)">(optional — those block direct browser calls)</span></label><input id="aipProxy" placeholder="e.g. https://corsproxy.io/?url=" value="${esc(corsProxy())}"><div class="hint">⚠ The proxy sees your key — only use one you trust. Gemini &amp; OpenRouter don't need this.</div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"><button class="btn primary" type="button" id="aipSave">Save providers</button><button class="btn" type="button" id="aipTest">⚡ Test with fallback</button></div>
+    <div class="hint" id="aipMsg" style="display:block;margin-top:8px"></div>`;
+  $("aipActive").onchange=()=>{const c=aiCfg();c.active=$("aipActive").value;aiSaveCfg(c);buildAiPanel();};
+  wrap.querySelectorAll("[data-test]").forEach(b=>b.onclick=async()=>{const p=b.dataset.test;const c=aiCfg();c.providers[p].key=wrap.querySelector(`[data-k="${p}"]`).value;c.providers[p].model=wrap.querySelector(`[data-m="${p}"]`).value;aiSaveCfg(c);$("aipMsg").textContent="Testing "+AI_DEFAULTS[p].label+"…";try{const o=await aiCallProvider(p,"Reply with only: OK",false);$("aipMsg").textContent="✓ "+AI_DEFAULTS[p].label+": "+(o||"").trim().slice(0,40);}catch(e){$("aipMsg").textContent="✕ "+AI_DEFAULTS[p].label+": "+e.message.slice(0,120);}});
+  $("aipSave").onclick=()=>{const c=aiCfg();wrap.querySelectorAll("[data-k]").forEach(i=>c.providers[i.dataset.k].key=i.value);wrap.querySelectorAll("[data-m]").forEach(i=>c.providers[i.dataset.m].model=i.value);aiSaveCfg(c);const pv=($("aipProxy").value||"").trim();if(pv)localStorage.setItem(NS+"corsproxy",pv);else localStorage.removeItem(NS+"corsproxy");toast("Providers saved");buildAiPanel();renderSettings();};
+  $("aipTest").onclick=async()=>{const c=aiCfg();wrap.querySelectorAll("[data-k]").forEach(i=>c.providers[i.dataset.k].key=i.value);aiSaveCfg(c);$("aipMsg").textContent="Testing with fallback…";try{const o=await aiCall("Reply with only: OK",false);$("aipMsg").textContent="✓ Answered: "+(o||"").trim().slice(0,40);}catch(e){$("aipMsg").textContent="✕ "+(e.message=="no-key"?"add a key":e.message).slice(0,140);}};
+}
+
+/* update AI hints when key present */
+function refreshAiHints(){$("aiAskHint").textContent=hasKey()?"AI ready — ask anything.":"Needs an AI key (🔑 top-right).";}
+setInterval(refreshAiHints,1500);
+
+/* ============ BOOT ============ */
+renderAiPrompts();
+route();
+setTimeout(fireReminders,1500);
+if("serviceWorker" in navigator){/* offline optional */}
+</script>
+</body>
+</html>
